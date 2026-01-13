@@ -1,12 +1,10 @@
 package org.Lexer;
 
-import jdk.jshell.spi.ExecutionControl;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public final class Node {
-    private String data;
+    private final String data;
     private List<Node> children;
 
     public Node(final String data) {
@@ -27,7 +25,7 @@ public final class Node {
         return toString(0);
     }
 
-    public String toString(final int level) {
+    private String toString(final int level) {
         final StringBuilder result = new StringBuilder();
         final String indent = "\t".repeat(level);
 

@@ -21,6 +21,13 @@ dependencies {
 
     // This dependency is used by the application.
     implementation libs.guava
+
+    // JFlex dependency
+    implementation 'de.jflex:jflex:1.9.1'
+
+    // Cup dependency
+    implementation 'com.github.vbmacher:java-cup-runtime:11b-20160615'
+    implementation 'com.github.vbmacher:java-cup:11b-20160615'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -32,5 +39,5 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'org.example.App'
+    mainClass = 'org.Lexer.App'
 }
