@@ -25,7 +25,4 @@ public abstract class NodoAST {
             hijos.get(i).print(indent, i == hijos.size() - 1);
         }
     }
-
-    @Override
-    public abstract String toString();
 }

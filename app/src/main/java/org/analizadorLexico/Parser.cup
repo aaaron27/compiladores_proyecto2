@@ -43,12 +43,30 @@ terminal Integer LIT_INT;
 terminal Double LIT_FLOAT;
 terminal Boolean LIT_BOOL;
 
-/* --- Seccion de No Terminales (Gramatica dummy) --- */
-non terminal program, declaration_list, declaration;
-non terminal global_var, function_def, main_def;
-non terminal type, param_list, param;
-non terminal block, statement_list, statement;
-non terminal assignment, var_decl, dims_decl, array_init, if_statement, case_list, single_case, else_part, row_list, array_row, params_items;
+/* --- Seccion de No Terminales (Gramatica) --- */
+non terminal Program program;
+non terminal Declaration_list_node declaration_list;
+non terminal DeclarationNode declaration;
+non terminal Global_var_decl_node global_var;
+non terminal Param_list_node param_list;
+non terminal Param_list_node params_items;
+non terminal Param_node param;
+non terminal Main_node main_def;
+non terminal Block_node block;
+non terminal Statement_list_node statement_list;
+non terminal Function_def_node function_def;
+non terminal TypeNode type;
+non terminal Dims_decl_node dims_decl;
+non terminal Array_init_node array_init;
+non terminal Row_list_node row_list;
+non terminal Var_decl_node var_decl;
+non terminal If_statement_node if_statement;
+non terminal Case_list_node case_list;
+non terminal Single_case_node single_case;
+
+
+non terminal statement;
+non terminal assignment, case_list, single_case, else_part, array_row;
 non terminal loop_statement, for_statement, io_statement, return_statement, break_statement, func_call;
 non terminal expression;
 non terminal expression_list;
@@ -67,41 +85,45 @@ precedence left PAREN_OPEN, PAREN_CLOSE;
 
 start with program;
 
-program ::= declaration_list;
+program ::= declaration_list:lista{: RESULT = new Program(lista); :};
 
-declaration_list ::= declaration_list declaration
-                   | declaration;
+declaration_list ::= declaration_list:lista declaration:decl {: lista.agregarHijo(decl); RESULT = lista; :}
+                   | declaration:decl {: Declaration_list_node nuevaLista = new Declaration_list_node(); nuevaLista.agregarHijo(decl); RESULT = nuevaLista; :};
 
-declaration ::= global_var
-              | function_def
-              | main_def;
+declaration ::= global_var:global {: RESULT = global; :}
+              | function_def:func {: RESULT = func; :}
+              | main_def:main {: RESULT = main; :};
 
-global_var ::= WORLD type IDENTIFIER SEMICOLON
-             | WORLD type IDENTIFIER ASSIGN expression SEMICOLON
-             | WORLD type IDENTIFIER dims_decl SEMICOLON
-             | WORLD type IDENTIFIER dims_decl ASSIGN array_init SEMICOLON;
+global_var ::= WORLD type:t IDENTIFIER:id SEMICOLON {: RESULT = new Global_var_decl_node(t, id); parser.tablaSimbolos.agregar(id, t.getNombreTipo()); :}
+             | WORLD type:t IDENTIFIER:id ASSIGN expression:expr SEMICOLON {: RESULT = new Global_var_node(t, id, expr); parser.tablaSimbolos.agregar(id, t.getNombreTipo()); :}
+             | WORLD type:t IDENTIFIER:id dims_decl:d SEMICOLON {: RESULT = new Global_var_node(t, id, d, null); parser.tablaSimbolos.agregar(id, t.getNombreTipo()+"[]"); :}
+             | WORLD type:t IDENTIFIER:id dims_decl:d ASSIGN array_init:ai SEMICOLON {: RESULT = new Global_var_node(t, id, d, ai); parser.tablaSimbolos.agregar(id, t.getNombreTipo()+"[]"); :};
 
-function_def ::= GIFT type IDENTIFIER PAREN_OPEN param_list PAREN_CLOSE block;
+function_def ::= GIFT type:t IDENTIFIER:id PAREN_OPEN param_list:params PAREN_CLOSE block:b {: RESULT = new Function_def_node(t, id, params, b); :};
 
-param_list ::= params_items
-             | /* vacio */ ;
+param_list ::= params_items:params_items {: RESULT = params_items; :}
+             | /* vacio */ {: RESULT = new ArrayList<>(); :} ;
 
-params_items ::= params_items COMMA param
-               | param ;
+params_items ::= params_items:params_items COMMA param:param {: params_items.agregarHijo(param); RESULT = params_items; :}
+               | param:param {: Params_list_node p = new Params_list_node(); p.agregarHijo(param); RESULT = p; :} ;
 
-param ::= type IDENTIFIER;
+param ::= type:t IDENTIFIER:id {: RESULT = new Param_node(t, id); :};
 
-main_def ::= COAL NAVIDAD PAREN_OPEN PAREN_CLOSE block;
+main_def ::= COAL NAVIDAD PAREN_OPEN PAREN_CLOSE block:b {: RESULT = new Main_node(b); :};
 
-block ::= BLOCK_START statement_list BLOCK_END
-        | BLOCK_START BLOCK_END;
+block ::= BLOCK_START statement_list:lista BLOCK_END {: RESULT = new Block_node(lista); :}
+        | BLOCK_START BLOCK_END {: RESULT = new Block_node(); :};
 
-type ::= INT | FLOAT | BOOL | CHAR | STRING;
+type ::= INT {: RESULT = new TypeNode("int"); :}
+       | FLOAT {: RESULT = new TypeNode("float"); :}
+       | BOOL {: RESULT = new TypeNode("boolean"); :}
+       | CHAR {: RESULT = new TypeNode("char"); :}
+       | STRING {: RESULT = new TypeNode("string"); :};
 
-statement_list ::= statement_list statement
-                 | statement;
+statement_list ::= statement_list:lista statement:st {: lista.agregarHijo(st); RESULT = lista; :}
+                 | statement:st {: Statement_list_node node = new Statement_list_node(); node.agregarHijo(st); RESULT = node; :};
 
-statement ::= var_decl
+statement ::= var_decl:var {: :}
             | assignment
             | if_statement
             | loop_statement
@@ -112,85 +134,80 @@ statement ::= var_decl
             | expression SEMICOLON
             | error SEMICOLON {: parser.report_error("Error recuperado", null); :};
 
+var_decl ::= LOCAL type:t IDENTIFIER:id SEMICOLON {: RESULT = new Var_decl_node(t, id); parser.tablaSimbolos.agregar(id, t.getNombreTipo());:}
+           | LOCAL type:t IDENTIFIER:id ASSIGN expression:expr SEMICOLON {: RESULT = new Var_decl_node(t, id, expr); parser.tablaSimbolos.agregar(id, t.getNombreTipo()); :}
+           | LOCAL type:t IDENTIFIER:id dims_decl:d SEMICOLON {: RESULT = new Var_decl_node(t, id, d, null); parser.tablaSimbolos.agregar(id, t.getNombreTipo()+"[]"); :}
+           | LOCAL type:t IDENTIFIER:id dims_decl:d ASSIGN array_init:ai SEMICOLON {: RESULT = new Global_var_node(t, id, d, ai); parser.tablaSimbolos.agregar(id, t.getNombreTipo()+"[]"); :};
+
+assignment ::= IDENTIFIER:id ASSIGN expression:expr SEMICOLON {: RESULT = new Assigment_node(id, expr); :}
+            | IDENTIFIER:id dims_decl:d ASSIGN array_init:ai SEMICOLON {: RESULT = new Assigment_node(id, d, ai); :};
+
+dims_decl ::= LEFT_ARRAY LIT_INT:i RIGHT_ARRAY LEFT_ARRAY LIT_INT:j RIGHT_ARRAY {: RESULT = new Dims_decl_node(i,j); :};
+
+array_init ::= BLOCK_START row_list:lista BLOCK_END {: RESULT = new Array_init_node(lista); :};
+
+row_list ::= row_list:lista COMMA array_row:ar2 {: lista.agregarHijo(ar2); RESULT = lista; :}
+            | array_row:ar {: Row_list_node nuevaLista = new Row_list_node(); nuevaLista.addHijo(ar); RESULT = nuevaLista; :};
+
+array_row ::= BLOCK_START expression_list:lista BLOCK_END {: RESULT = new Array_row_node(lista); :};
+
+if_statement ::= DECIDE OF case_list:lista else_part:else END DECIDE ENDL {: RESULT = new If_statement_node(lista, elseBlock); :};
+
+case_list ::= case_list:lista single_case:single {: lista.agregarHijo(single); RESULT = lista; :}
+            | single_case:single {: Single_case_node node = new Single_case_node(); node.agregarHijo(single); RESULT = node; :};
+
+single_case ::= expression:expr ARROW block:b {: RESULT = new Single_case_node(expr, b); :};
+
+else_part ::= ELSE ARROW block:b {: RESULT = Else_part_node(b); :}
+            | /* vacio */ {: RESULT = Else_part_node(null); :};
+
+loop_statement ::= LOOP statement_list:lista EXIT WHEN expression:expr ENDL END LOOP ENDL {:  :};
+
+for_statement ::= FOR PAREN_OPEN assignment:as expression:expr1 SEMICOLON expression:expr2 PAREN_CLOSE block:b {: RESULT = new For_statement_node(as, expr1, expr2); :};
+
+io_statement ::= SHOW expression:expr ENDL {: RESULT = new Io_statement_node(expr); :}
+          | GET IDENTIFIER:id ENDL {: RESULT = new Io_statement_node (id); :}
+          | GET IDENTIFIER:id dims_decl:d ENDL {: RESULT = new Io_statement_node(id, d); :};
 
 
+return_statement ::= RETURN expression:expr SEMICOLON {: RESULT = new Return_statement_node(expr); :}
+              | RETURN SEMICOLON {: RESULT = new ArrayList<>(); :};
 
-var_decl ::= LOCAL type IDENTIFIER SEMICOLON
-           | LOCAL type IDENTIFIER ASSIGN expression SEMICOLON
-           | LOCAL type IDENTIFIER dims_decl SEMICOLON
-           | LOCAL type IDENTIFIER dims_decl ASSIGN array_init SEMICOLON;
+break_statement ::= BREAK SEMICOLON {: RESULT = new ArrayList<>(); :};
 
+func_call ::= IDENTIFIER:id PAREN_OPEN expression_list:lista PAREN_CLOSE {: RESULT = new Func_call_node(id, lista); :};
 
-assignment ::= IDENTIFIER ASSIGN expression SEMICOLON
-            | IDENTIFIER dims_decl ASSIGN array_init SEMICOLON;
+expression_list ::= expression_list:lista COMMA expression:expr {: lista.agregarHijo(expr); RESULT = lista; :}
+                      | expression:expr {: Expression_list_node node = new Expression_list_node(); node.agregarHijo(expr); RESULT = node; :}
+                      | /* vacio */ {: RESULT = new ArrayList<>(); :};
 
-dims_decl ::= LEFT_ARRAY LIT_INT RIGHT_ARRAY LEFT_ARRAY LIT_INT RIGHT_ARRAY;
-
-array_init ::= BLOCK_START row_list BLOCK_END;
-row_list ::= array_row COMMA array_row;
-array_row ::= BLOCK_START expression_list BLOCK_END;
-
-if_statement ::= DECIDE OF case_list else_part END DECIDE ENDL;
-
-case_list ::= case_list single_case
-            | single_case;
-
-single_case ::= expression ARROW block;
-
-else_part ::= ELSE ARROW block
-            | /* vacio */ ;
-
-loop_statement ::= LOOP statement_list EXIT WHEN expression ENDL END LOOP ENDL;
-
-
-for_statement ::= FOR PAREN_OPEN assignment expression SEMICOLON expression PAREN_CLOSE block;
-
-
-io_statement ::= SHOW expression ENDL
-          | GET IDENTIFIER ENDL
-          | GET IDENTIFIER dims_decl ENDL;
-
-
-return_statement ::= RETURN expression SEMICOLON
-              | RETURN SEMICOLON;
-
-break_statement ::= BREAK SEMICOLON;
-
-
-func_call ::= IDENTIFIER PAREN_OPEN expression_list PAREN_CLOSE;
-
-
-expression_list ::= expression_list COMMA expression
-                      | expression
-                      | /* vacio */;
-
-expression ::= expression PLUS expression
-             | expression MINUS expression
-             | expression MULT expression
-             | expression DIV expression
-             | expression DIV_INT expression
-             | expression MOD expression
-             | expression POWER expression
-             | expression LESS expression
-             | expression GREATER expression
-             | expression LESS_EQ expression
-             | expression GREATER_EQ expression
-             | expression EQ_EQ expression
-             | expression NOT_EQ expression
-             | expression AND expression
-             | expression OR expression
-             | NOT expression
-             | MINUS expression
-             | INC IDENTIFIER
-             | DEC IDENTIFIER
-             | IDENTIFIER INC
-             | IDENTIFIER DEC
-             | PAREN_OPEN expression PAREN_CLOSE
-             | func_call
-             | IDENTIFIER
-             | LIT_INT
-             | LIT_FLOAT
-             | LIT_BOOL
-             | LIT_CHAR
-             | LIT_STRING
-             | IDENTIFIER dims_decl;
+expression ::= expression:expr1 PLUS expression:expr2 {: :}
+             | expression:expr1 MINUS expression:expr2 {: :}
+             | expression:expr1 MULT expression:expr2 {: :}
+             | expression:expr1 DIV expression:expr2 {: :}
+             | expression:expr1 DIV_INT expression:expr2 {: :}
+             | expression:expr1 MOD expression:expr2 {: :}
+             | expression:expr1 POWER expression:expr2 {: :}
+             | expression:expr1 LESS expression:expr2 {: :}
+             | expression:expr1 GREATER expression:expr2 {: :}
+             | expression:expr1 LESS_EQ expression:expr2 {: :}
+             | expression:expr1 GREATER_EQ expression:expr2 {: :}
+             | expression:expr1 EQ_EQ expression:expr2 {: :}
+             | expression:expr1 NOT_EQ expression:expr2 {: :}
+             | expression:expr1 AND expression:expr2 {: :}
+             | expression:expr1 OR expression:expr2 {: :}
+             | NOT expression:expr {: :}
+             | MINUS expression:expr {: :}
+             | INC IDENTIFIER:id {: :}
+             | DEC IDENTIFIER:id {: :}
+             | IDENTIFIER:id INC {: :}
+             | IDENTIFIER:id DEC {: :}
+             | PAREN_OPEN expression:expr PAREN_CLOSE {: :}
+             | func_call:func {: :}
+             | IDENTIFIER:id {: :}
+             | LIT_INT {: :}
+             | LIT_FLOAT {: :}
+             | LIT_BOOL {: :}
+             | LIT_CHAR {: :}
+             | LIT_STRING {: :}
+             | IDENTIFIER:id dims_decl:dims {: :};

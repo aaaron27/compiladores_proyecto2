@@ -1,7 +1,5 @@
 package org.analizadorLexico;
 
-import org.analizadorLexico.analyzer.LexicalAnalyzer;
-
 import static org.analizadorLexico.analyzer.LexicalAnalyzer.analyze;
 
 public final class App {
