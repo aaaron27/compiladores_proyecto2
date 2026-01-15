@@ -60,14 +60,16 @@ non terminal Dims_decl_node dims_decl;
 non terminal Array_init_node array_init;
 non terminal Row_list_node row_list;
 non terminal Var_decl_node var_decl;
+non terminal Array_row_node array_node;
 non terminal If_statement_node if_statement;
 non terminal Case_list_node case_list;
 non terminal Single_case_node single_case;
-
+non terminal Else_part_node else_part;
+non terminal Loop_statement_node loop_statement;
 
 non terminal statement;
-non terminal assignment, case_list, single_case, else_part, array_row;
-non terminal loop_statement, for_statement, io_statement, return_statement, break_statement, func_call;
+non terminal assignment;
+non terminal for_statement, io_statement, return_statement, break_statement, func_call;
 non terminal expression;
 non terminal expression_list;
 
@@ -168,7 +170,6 @@ for_statement ::= FOR PAREN_OPEN assignment:as expression:expr1 SEMICOLON expres
 io_statement ::= SHOW expression:expr ENDL {: RESULT = new Io_statement_node(expr); :}
           | GET IDENTIFIER:id ENDL {: RESULT = new Io_statement_node (id); :}
           | GET IDENTIFIER:id dims_decl:d ENDL {: RESULT = new Io_statement_node(id, d); :};
-
 
 return_statement ::= RETURN expression:expr SEMICOLON {: RESULT = new Return_statement_node(expr); :}
               | RETURN SEMICOLON {: RESULT = new ArrayList<>(); :};
