@@ -1,0 +1,196 @@
+package org.analizadorLexico;
+
+import java_cup.runtime.*;
+
+parser code {:
+    public TablaSimbolos tablaSimbolos = new TablaSimbolos();
+    // Conectar el parser con el lexer
+    public Parser(Lexer lexer) {
+        super(lexer);
+    }
+:}
+
+/* --- Declaracion de Terminales (Tokens) --- */
+
+// Palabras reservadas
+terminal WORLD, LOCAL, GIFT, NAVIDAD, COAL;
+terminal DECIDE, OF, END, LOOP, EXIT, WHEN, FOR;
+terminal SHOW, GET, RETURN, BREAK, ELSE, ENDL;
+
+// Tipos de datos
+terminal INT, FLOAT, BOOL, CHAR, STRING;
+
+// Operadores y Signos
+terminal BLOCK_START, BLOCK_END; // ¡, !
+terminal PAREN_OPEN, PAREN_CLOSE; // ¿, ?
+terminal COMMA, ARROW, SEMICOLON; // , , -> , ;
+terminal LEFT_ARRAY, RIGHT_ARRAY; // [,]
+
+// Aritmeticos
+terminal PLUS, MINUS, MULT, DIV, DIV_INT, MOD, POWER;
+terminal INC, DEC;
+
+// Relacionales y Logicos
+terminal ASSIGN; // =
+terminal EQ_EQ, NOT_EQ, LESS, GREATER, LESS_EQ, GREATER_EQ;
+terminal AND, OR, NOT; // @, ~, Σ
+
+// Terminales con valor (Lexema)
+terminal String IDENTIFIER;
+terminal String LIT_STRING;
+terminal String LIT_CHAR;
+terminal Integer LIT_INT;
+terminal Double LIT_FLOAT;
+terminal Boolean LIT_BOOL;
+
+/* --- Seccion de No Terminales (Gramatica dummy) --- */
+non terminal program, declaration_list, declaration;
+non terminal global_var, function_def, main_def;
+non terminal type, param_list, param;
+non terminal block, statement_list, statement;
+non terminal assignment, var_decl, dims_decl, array_init, if_statement, case_list, single_case, else_part, row_list, array_row, params_items;
+non terminal loop_statement, for_statement, io_statement, return_statement, break_statement, func_call;
+non terminal expression;
+non terminal expression_list;
+
+precedence left OR;
+precedence left AND;
+precedence left EQ_EQ, NOT_EQ;
+precedence left LESS, LESS_EQ, GREATER, GREATER_EQ;
+precedence left PLUS, MINUS;
+precedence left MULT, DIV, DIV_INT, MOD;
+precedence right POWER;
+precedence right NOT, INC, DEC;
+precedence left PAREN_OPEN, PAREN_CLOSE;
+
+/* --- Gramática --- */
+
+start with program;
+
+program ::= declaration_list;
+
+declaration_list ::= declaration_list declaration
+                   | declaration;
+
+declaration ::= global_var
+              | function_def
+              | main_def;
+
+global_var ::= WORLD type IDENTIFIER SEMICOLON
+             | WORLD type IDENTIFIER ASSIGN expression SEMICOLON
+             | WORLD type IDENTIFIER dims_decl SEMICOLON
+             | WORLD type IDENTIFIER dims_decl ASSIGN array_init SEMICOLON;
+
+function_def ::= GIFT type IDENTIFIER PAREN_OPEN param_list PAREN_CLOSE block;
+
+param_list ::= params_items
+             | /* vacio */ ;
+
+params_items ::= params_items COMMA param
+               | param ;
+
+param ::= type IDENTIFIER;
+
+main_def ::= COAL NAVIDAD PAREN_OPEN PAREN_CLOSE block;
+
+block ::= BLOCK_START statement_list BLOCK_END
+        | BLOCK_START BLOCK_END;
+
+type ::= INT | FLOAT | BOOL | CHAR | STRING;
+
+statement_list ::= statement_list statement
+                 | statement;
+
+statement ::= var_decl
+            | assignment
+            | if_statement
+            | loop_statement
+            | for_statement
+            | io_statement
+            | return_statement
+            | break_statement
+            | expression SEMICOLON
+            | error SEMICOLON {: parser.report_error("Error recuperado", null); :};
+
+
+
+
+var_decl ::= LOCAL type IDENTIFIER SEMICOLON
+           | LOCAL type IDENTIFIER ASSIGN expression SEMICOLON
+           | LOCAL type IDENTIFIER dims_decl SEMICOLON
+           | LOCAL type IDENTIFIER dims_decl ASSIGN array_init SEMICOLON;
+
+
+assignment ::= IDENTIFIER ASSIGN expression SEMICOLON
+            | IDENTIFIER dims_decl ASSIGN array_init SEMICOLON;
+
+dims_decl ::= LEFT_ARRAY LIT_INT RIGHT_ARRAY LEFT_ARRAY LIT_INT RIGHT_ARRAY;
+
+array_init ::= BLOCK_START row_list BLOCK_END;
+row_list ::= array_row COMMA array_row;
+array_row ::= BLOCK_START expression_list BLOCK_END;
+
+if_statement ::= DECIDE OF case_list else_part END DECIDE ENDL;
+
+case_list ::= case_list single_case
+            | single_case;
+
+single_case ::= expression ARROW block;
+
+else_part ::= ELSE ARROW block
+            | /* vacio */ ;
+
+loop_statement ::= LOOP statement_list EXIT WHEN expression ENDL END LOOP ENDL;
+
+
+for_statement ::= FOR PAREN_OPEN assignment expression SEMICOLON expression PAREN_CLOSE block;
+
+
+io_statement ::= SHOW expression ENDL
+          | GET IDENTIFIER ENDL
+          | GET IDENTIFIER dims_decl ENDL;
+
+
+return_statement ::= RETURN expression SEMICOLON
+              | RETURN SEMICOLON;
+
+break_statement ::= BREAK SEMICOLON;
+
+
+func_call ::= IDENTIFIER PAREN_OPEN expression_list PAREN_CLOSE;
+
+
+expression_list ::= expression_list COMMA expression
+                      | expression
+                      | /* vacio */;
+
+expression ::= expression PLUS expression
+             | expression MINUS expression
+             | expression MULT expression
+             | expression DIV expression
+             | expression DIV_INT expression
+             | expression MOD expression
+             | expression POWER expression
+             | expression LESS expression
+             | expression GREATER expression
+             | expression LESS_EQ expression
+             | expression GREATER_EQ expression
+             | expression EQ_EQ expression
+             | expression NOT_EQ expression
+             | expression AND expression
+             | expression OR expression
+             | NOT expression
+             | MINUS expression
+             | INC IDENTIFIER
+             | DEC IDENTIFIER
+             | IDENTIFIER INC
+             | IDENTIFIER DEC
+             | PAREN_OPEN expression PAREN_CLOSE
+             | func_call
+             | IDENTIFIER
+             | LIT_INT
+             | LIT_FLOAT
+             | LIT_BOOL
+             | LIT_CHAR
+             | LIT_STRING
+             | IDENTIFIER dims_decl;
