@@ -1,0 +1,64 @@
+|Variables globales
+world int puntaje = 0;
+world float gravedad = 9.8;
+
+| Declaracion funcion
+gift int calcularSuma ¿ int a, int b ? ¡
+    return a + b;
+!
+
+coal navidad ¿ ? ¡
+
+    local int matriz[2][2] = ¡
+        ¡ 1, 2 !
+        ,
+        ¡ 3, 4 !
+    !;
+
+    local float contador = 10.3245;
+    local boolean activo = true;
+    local string mensaje = "Iniciando conteo";
+
+    | Variables auxiliares
+    local int ay;
+    local int i;
+
+    | GET usa ENDL, no punto y coma
+    get ay endl
+    show mensaje endl
+
+    | DECIDE OF
+    decide of
+         contador > 5 -> ¡
+            show "El contador es grande" endl
+        !
+        else -> ¡
+            show "El contador es pequeño" endl
+        !
+    end decide endl
+
+    | LOOP
+    loop
+        show contador endl
+
+        | Asignaciones usan PUNTO Y COMA (;)
+        contador = contador - 1;
+
+        | Exit usa ENDL
+        exit when contador == 0 endl
+    end loop endl
+
+    | Asignacion de funcion usa PUNTO Y COMA (;)
+    puntaje = calcularSuma ¿ 50, 20 ?;
+
+    decide of
+         activo @ ¿ puntaje > 0 ? -> ¡
+            show "Juego terminado con puntaje positivo" endl
+        !
+    end decide endl
+
+    | FOR (variable i declarada arriba)
+    for ¿ i = 0; i < 1029; i++ ? ¡
+        show i endl
+    !
+!
