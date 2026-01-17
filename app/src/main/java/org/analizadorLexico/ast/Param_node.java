@@ -5,7 +5,14 @@ public class Param_node extends NodoAST {
 
     public Param_node(TypeNode tipo, String id) {
         super();
-        this.agregarHijo(tipo);
         this.id = id;
+        if (tipo != null) {
+            this.agregarHijo(tipo);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Parametro: " + id;
     }
 }

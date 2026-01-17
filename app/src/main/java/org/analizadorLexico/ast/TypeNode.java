@@ -11,4 +11,10 @@ public class TypeNode extends NodoAST {
     public String getNombreTipo() {
         return this.nombreTipo;
     }
+
+    @Override
+    public String toString() {
+        // Esto permite que en el árbol veas "Tipo: int"
+        return "Tipo: " + nombreTipo;
+    }
 }

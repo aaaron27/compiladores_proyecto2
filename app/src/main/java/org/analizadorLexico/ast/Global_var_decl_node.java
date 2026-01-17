@@ -3,30 +3,32 @@ package org.analizadorLexico.ast;
 public final class Global_var_decl_node extends NodoAST {
     public String id;
 
-    //Caso solo declaracion
+    // Constructor 1: Solo declaración
     public Global_var_decl_node(TypeNode tipo, String id) {
-        this.agregarHijo(tipo);
+        super();
         this.id = id;
+        if (tipo != null) this.agregarHijo(tipo);
     }
 
-    // Casos creacion, asignacion
+    // Constructor 2: Asignación
     public Global_var_decl_node(TypeNode tipo, String id, NodoAST expresion) {
-        this.agregarHijo(tipo);
+        super();
         this.id = id;
-        this.agregarHijo(expresion);
+        if (tipo != null) this.agregarHijo(tipo);
+        if (expresion != null) this.agregarHijo(expresion);
     }
 
-    // Casos del array
+    // Constructor 3: Arreglos
     public Global_var_decl_node(TypeNode tipo, String id, NodoAST dimensiones, NodoAST arrayInit) {
-        this.agregarHijo(tipo);
+        super();
         this.id = id;
+        if (tipo != null) this.agregarHijo(tipo);
+        if (dimensiones != null) this.agregarHijo(dimensiones);
+        if (arrayInit != null) this.agregarHijo(arrayInit);
+    }
 
-        if (dimensiones != null) {
-            this.agregarHijo(dimensiones);
-        }
-
-        if (arrayInit != null) {
-            this.agregarHijo(arrayInit);
-        }
+    @Override
+    public String toString() {
+        return "Var Global: " + id;
     }
 }

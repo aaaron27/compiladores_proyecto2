@@ -1,30 +1,36 @@
 package org.analizadorLexico;
 
-import static org.analizadorLexico.analyzer.LexicalAnalyzer.analyze;
+import org.analizadorLexico.ast.NodoAST;
+import java.io.Reader;
+import java.io.FileReader;
 
 public final class App {
-    private static final String TEST_FILE_PATH = "C:/Users/faken/Desktop/code/proyectos/compi/1/CompiladoresProyecto1/prueba.txt";
-
-    private App() {
-
-    }
+    private static final String TEST_FILE_PATH = "C:/Users/faken/Desktop/code/proyectos/compi/2/compiladores_proyecto2/prueba.txt";
 
     public static void main(String[] args) {
         try {
-            analyze(TEST_FILE_PATH);
-            java.io.Reader reader = new java.io.FileReader(TEST_FILE_PATH);
-            Lexer lexer = new Lexer(reader);
+            System.out.println("Iniciando analisis lexico...");
 
+
+            Reader reader = new FileReader(TEST_FILE_PATH);
+            Lexer lexer = new Lexer(reader);
             Parser parser = new Parser(lexer);
 
             System.out.println("Analizando sintaxis...");
-            parser.parse();
+            Object result = parser.parse().value;
 
-            System.out.println("Analisis sintactico finalizado con exito!");
+            if (result instanceof NodoAST) {
+                NodoAST raiz = (NodoAST) result;
+                System.out.println("\n--- ARBOL DE SINTAXIS ABSTRACTA (AST) ---");
+                raiz.print("", true);
+                System.out.println("\nAnalisis finalizado con exito!");
+            } else {
+                System.out.println("El analisis termino pero no se genero un arbol valido.");
+            }
 
         } catch (Exception e) {
+            System.err.println("\n[ERROR] Durante el análisis:");
             e.printStackTrace();
-            System.err.println("Error fatal durante el analisis: " + e.getMessage());
         }
     }
 }

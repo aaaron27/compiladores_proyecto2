@@ -7,4 +7,8 @@ public class Func_call_node extends NodoAST {
         this.agregarHijo(list);
         this.id = id;
     }
+    @Override
+    public String toString() {
+        return "Llamada Funcion: " + id;
+    }
 }

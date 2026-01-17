@@ -1,64 +1,49 @@
-|Variables globales
-world int puntaje = 0;
-world float gravedad = 9.8;
+world string _s1_ endl |comentario linea###
 
-| Declaracion funcion
-gift int calcularSuma ¿ int a, int b ? ¡
-    return a + b;
-!
+є !@#$$%^& multilinea
+  э
 
-coal navidad ¿ ? ¡
+gift float _mi_  ¿ int _dif_, char _otra_ ? ¡
+	local int _otra_ endl
+	local int miArr[2][2] endl
+	local int miArr[2][2] = ¡¡1,2!,¡3,4!! endl
+	local string _str_="Hola  endl ~&|! endl & ?  mundo" endl
+	for   ¿ int i = 0 endl  i < 10 endl ++i ?
+	 ¡ 
+		loop
+		  	_var_2 = _var_2 - 1 endl 
+			_var_ = _var_ - 1 endl  
+		exit when ¿ _var2_>12.2 @ Σ ¿12> ¿ 34+35 ??  ?  endl 
+		end loop endl 
 
-    local int matriz[2][2] = ¡
-        ¡ 1, 2 !
-        ,
-        ¡ 3, 4 !
-    !;
+		decide   of
+		¿ false @ 3>4 ~ 4*5 > 5 + g % 4 + func ¿1,2? ?  ->
+		 ¡ 
+			show ¿ "entra al if" ?  endl 
+			!
+		end decide endl 
+		decide   of 
+		true ->  
+		 ¡ 
+			show ¿ _var_ ?  endl 
+		 ! 
+		else ->
+		 ¡ 
+			decide   of 
+				_otra_ == 1 -> ¡ 
+					show ¿ "!|" ?  endl  !
+				_otra_ == 2 -> ¡
+					_otra_ = 10 endl 
+					break endl  !
+				else -> ¡ 
+					_otra_ = -10.5 * -1.9 endl  !
+			end  decide   endl 
+		 !
+		 end  decide   endl 
+	 !
+	return 1 endl  
+  ! 
 
-    local float contador = 10.3245;
-    local boolean activo = true;
-    local string mensaje = "Iniciando conteo";
-
-    | Variables auxiliares
-    local int ay;
-    local int i;
-
-    | GET usa ENDL, no punto y coma
-    get ay endl
-    show mensaje endl
-
-    | DECIDE OF
-    decide of
-         contador > 5 -> ¡
-            show "El contador es grande" endl
-        !
-        else -> ¡
-            show "El contador es pequeño" endl
-        !
-    end decide endl
-
-    | LOOP
-    loop
-        show contador endl
-
-        | Asignaciones usan PUNTO Y COMA (;)
-        contador = contador - 1;
-
-        | Exit usa ENDL
-        exit when contador == 0 endl
-    end loop endl
-
-    | Asignacion de funcion usa PUNTO Y COMA (;)
-    puntaje = calcularSuma ¿ 50, 20 ?;
-
-    decide of
-         activo @ ¿ puntaje > 0 ? -> ¡
-            show "Juego terminado con puntaje positivo" endl
-        !
-    end decide endl
-
-    | FOR (variable i declarada arriba)
-    for ¿ i = 0; i < 1029; i++ ? ¡
-        show i endl
-    !
-!
+ coal  navidad  ¿  ?   ¡ 
+	return -5.6 endl 
+  ! 
