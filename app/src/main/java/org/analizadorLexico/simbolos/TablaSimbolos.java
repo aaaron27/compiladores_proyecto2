@@ -18,7 +18,19 @@ public class TablaSimbolos {
     public boolean existe(String nombre) {
         return tabla.containsKey(nombre);
     }
-
+    public void imprimirTabla() {
+        System.out.println("\n=== CONTENIDO DE LA TABLA DE SÍMBOLOS ===");
+        if (tabla.isEmpty()) {
+            System.out.println("La tabla está vacía.");
+        } else {
+            System.out.printf("%-20s | %-10s%n", "Nombre", "Tipo");
+            System.out.println("-------------------------------------");
+            tabla.forEach((nombre, tipo) -> {
+                System.out.printf("%-20s | %-10s%n", nombre, tipo);
+            });
+        }
+        System.out.println("==========================================\n");
+    }
     public String obtenerTipo(String nombre) {
         return tabla.get(nombre);
     }

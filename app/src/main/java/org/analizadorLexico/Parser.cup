@@ -5,6 +5,9 @@ import org.analizadorLexico.simbolos.*;
 
 parser code {:
     public TablaSimbolos tablaSimbolos = new TablaSimbolos();
+    public TablaSimbolos getTablaSimbolos() {
+            return this.tablaSimbolos;
+        }
     // Conectar el parser con el lexer
     public Parser(Lexer lexer) {
         super(lexer);

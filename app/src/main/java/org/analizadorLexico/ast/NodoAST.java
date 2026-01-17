@@ -13,11 +13,11 @@ public abstract class NodoAST {
     public void print(String indent, boolean ultimo) {
         System.out.print(indent);
         if (ultimo) {
-            System.out.print("└─ ");
+            System.out.print("/--");
             indent += "  ";
         } else {
-            System.out.print("├─ ");
-            indent += "│ ";
+            System.out.print("|-- ");
+            indent += "|";
         }
         System.out.println(toString());
 

@@ -594,6 +594,9 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 
     public TablaSimbolos tablaSimbolos = new TablaSimbolos();
+    public TablaSimbolos getTablaSimbolos() {
+            return this.tablaSimbolos;
+        }
     // Conectar el parser con el lexer
     public Parser(Lexer lexer) {
         super(lexer);

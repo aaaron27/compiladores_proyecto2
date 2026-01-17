@@ -1,5 +1,6 @@
 package org.analizadorLexico;
 
+import org.analizadorLexico.analyzer.LexicalAnalyzer;
 import org.analizadorLexico.ast.NodoAST;
 import java.io.Reader;
 import java.io.FileReader;
@@ -9,8 +10,7 @@ public final class App {
 
     public static void main(String[] args) {
         try {
-            System.out.println("Iniciando analisis lexico...");
-
+            LexicalAnalyzer.analyze(TEST_FILE_PATH);
 
             Reader reader = new FileReader(TEST_FILE_PATH);
             Lexer lexer = new Lexer(reader);
@@ -23,6 +23,7 @@ public final class App {
                 NodoAST raiz = (NodoAST) result;
                 System.out.println("\n--- ARBOL DE SINTAXIS ABSTRACTA (AST) ---");
                 raiz.print("", true);
+                parser.getTablaSimbolos().imprimirTabla();
                 System.out.println("\nAnalisis finalizado con exito!");
             } else {
                 System.out.println("El analisis termino pero no se genero un arbol valido.");
