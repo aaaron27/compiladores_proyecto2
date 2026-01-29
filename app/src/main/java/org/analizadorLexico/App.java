@@ -6,7 +6,7 @@ import java.io.Reader;
 import java.io.FileReader;
 
 public final class App {
-    private static final String TEST_FILE_PATH = "C:/Users/faken/Desktop/code/proyectos/compi/2/compiladores_proyecto2/prueba.txt";
+    private static final String TEST_FILE_PATH = "/home/aaaron27/compiladores/proyecto2/prueba.txt";
 
     public static void main(String[] args) {
         try {

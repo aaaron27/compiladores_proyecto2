@@ -82,8 +82,6 @@ non terminal NodoAST expression;
 non terminal Expression_list_node expression_list;
 non terminal Array_row_node array_row;
 
-
-
 precedence left OR;
 precedence left AND;
 precedence left EQ_EQ, NOT_EQ;
@@ -112,7 +110,13 @@ global_var ::= WORLD type:t IDENTIFIER:id ENDL {: RESULT = new Global_var_decl_n
              | WORLD type:t IDENTIFIER:id dims_decl:d ENDL {: RESULT = new Global_var_decl_node(t, id, d, null); parser.tablaSimbolos.agregar(id, t.getNombreTipo()+"[]"); :}
              | WORLD type:t IDENTIFIER:id dims_decl:d ASSIGN array_init:ai ENDL {: RESULT = new Global_var_decl_node(t, id, d, ai); parser.tablaSimbolos.agregar(id, t.getNombreTipo()+"[]"); :};
 
-function_def ::= GIFT type:t IDENTIFIER:id PAREN_OPEN param_list:params PAREN_CLOSE block:b {: RESULT = new Function_def_node(t, id, params, b); :};
+function_def ::= GIFT type:t IDENTIFIER:id PAREN_OPEN
+                 {: parser.tablaSimbolos.openScope(); :}
+                 param_list:params PAREN_CLOSE
+                 block:b
+                 {: parser.tablaSimbolos.closeScope();
+                    RESULT = new Function_def_node(t, id, params, b); :};
+
 
 param_list ::= params_items:params_items {: RESULT = params_items; :}
              | /* vacio */ {: RESULT = new Param_list_node(); :} ;
@@ -120,9 +124,9 @@ param_list ::= params_items:params_items {: RESULT = params_items; :}
 params_items ::= params_items:lista COMMA param:param {: lista.agregarHijo(param); RESULT = lista; :}
                | param:param {: Param_list_node p = new Param_list_node(); p.agregarHijo(param); RESULT = p; :} ;
 
-param ::= type:t IDENTIFIER:id {: RESULT = new Param_node(t, id); :};
+param ::= type:t IDENTIFIER:id {:  RESULT = new Param_node(t, id); :};
 
-main_def ::= COAL NAVIDAD PAREN_OPEN PAREN_CLOSE block:b {: RESULT = new Main_def_node(b); :};
+main_def ::= COAL NAVIDAD PAREN_OPEN PAREN_CLOSE {: parser.tablaSimbolos.openScope(); :} block:b {: parser.tablaSimbolos.closeScope(); RESULT = new Main_def_node(b); :};
 
 block ::= BLOCK_START statement_list:lista BLOCK_END {: RESULT = new Block_node(lista); :}
         | BLOCK_START BLOCK_END {: RESULT = new Block_node(); :};
