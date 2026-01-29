@@ -41,12 +41,14 @@ public class sym {
   public static final int PLUS = 34;
   public static final int EXIT = 11;
   public static final int ASSIGN = 43;
+  public static final int LIT_NEGFLOAT = 60;
   public static final int OF = 8;
   public static final int EOF = 0;
   public static final int RETURN = 16;
   public static final int DIV_INT = 38;
   public static final int error = 1;
   public static final int LIT_STRING = 54;
+  public static final int LIT_NEG = 59;
   public static final int LIT_CHAR = 55;
   public static final int MOD = 39;
   public static final int BREAK = 17;
@@ -126,7 +128,9 @@ public class sym {
   "LIT_CHAR",
   "LIT_INT",
   "LIT_FLOAT",
-  "LIT_BOOL"
+  "LIT_BOOL",
+  "LIT_NEG",
+  "LIT_NEGFLOAT"
   };
 }
 

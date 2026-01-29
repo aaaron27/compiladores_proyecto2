@@ -46,6 +46,8 @@ terminal String LIT_CHAR;
 terminal Integer LIT_INT;
 terminal Double LIT_FLOAT;
 terminal Boolean LIT_BOOL;
+terminal Integer LIT_NEG;
+terminal Double LIT_NEGFLOAT;
 
 /* --- Seccion de No Terminales (Gramatica) --- */
 
@@ -81,6 +83,7 @@ non terminal Assignment_node assignment;
 non terminal NodoAST expression;
 non terminal Expression_list_node expression_list;
 non terminal Array_row_node array_row;
+non terminal Dims_access_node dims_access;
 
 precedence left OR;
 precedence left AND;
@@ -159,9 +162,12 @@ var_decl ::= LOCAL type:t IDENTIFIER:id ENDL {: RESULT = new Var_decl_node(t, id
            | LOCAL type:t IDENTIFIER:id dims_decl:d ASSIGN array_init:ai ENDL {: RESULT = new Var_decl_node(t, id, d, ai); parser.tablaSimbolos.agregar(id, t.getNombreTipo()+"[]"); :};
 
 assignment ::= IDENTIFIER:id ASSIGN expression:expr {: RESULT = new Assignment_node(id, expr); :}
-            | IDENTIFIER:id dims_decl:d ASSIGN array_init:ai {: RESULT = new Assignment_node(id, d, ai); :};
+            | IDENTIFIER:id dims_access:d ASSIGN expression:ai {: RESULT = new Assignment_node(id, d, ai); :};
 
 dims_decl ::= LEFT_ARRAY LIT_INT:i RIGHT_ARRAY LEFT_ARRAY LIT_INT:j RIGHT_ARRAY {: int f = Integer.parseInt(i.toString()); int c = Integer.parseInt(j.toString()); RESULT = new Dims_decl_node(f,c); :};
+
+dims_access ::= LEFT_ARRAY expression:expr1 RIGHT_ARRAY LEFT_ARRAY expression:expre2 RIGHT_ARRAY {: RESULT = new Dims_access_node(expr1,expre2); :};
+
 
 array_init ::= BLOCK_START row_list:lista BLOCK_END {: RESULT = new Array_init_node(lista); :};
 
@@ -184,12 +190,11 @@ loop_statement ::= LOOP statement_list:lista EXIT WHEN expression:expr ENDL END 
 
 for_statement ::= FOR PAREN_OPEN INT assignment:as ENDL expression:expr1 ENDL expression:expr2 PAREN_CLOSE block:b {: RESULT = new For_statement_node(as, expr1, expr2, b); :};
 
-io_statement ::= SHOW expression:expr ENDL {: RESULT = new Io_statement_node(expr); :}
+io_statement ::= SHOW PAREN_OPEN expression:expr PAREN_CLOSE ENDL {: RESULT = new Io_statement_node(expr); :}
           | GET IDENTIFIER:id ENDL {: RESULT = new Io_statement_node (id); :}
           | GET IDENTIFIER:id dims_decl:d ENDL {: RESULT = new Io_statement_node(id, d); :};
 
-return_statement ::= RETURN expression:expr ENDL {: RESULT = new Return_statement_node(expr); :}
-              | RETURN ENDL {: RESULT = new Return_statement_node(); :};
+return_statement ::= RETURN expression:expr ENDL {: RESULT = new Return_statement_node(expr); :};
 
 break_statement ::= BREAK ENDL {: RESULT = new Break_statement_node(); :};
 
@@ -252,9 +257,6 @@ expression ::=
              | NOT expression:expr
              {: RESULT = new Unary_op_node("NOT", expr, "PREFIX"); :}
 
-             | MINUS expression:expr
-             {: RESULT = new Unary_op_node("-", expr, "PREFIX"); :} %prec MULT
-
              /* --- Incrementos y Decrementos (Prefix/Postfix) --- */
 
              | INC IDENTIFIER:id
@@ -279,10 +281,16 @@ expression ::=
              | IDENTIFIER:id
              {: RESULT = new Id_access_node(id); :}
 
-             | IDENTIFIER:id dims_decl:dims
+             | IDENTIFIER:id dims_access:dims
              {: RESULT = new Id_access_node(id, dims); :}
 
              /* --- Literales --- */
+             | LIT_NEG:val
+             {: RESULT = new Literal_node("neg", val.toString()); :}
+
+             | LIT_NEGFLOAT:val
+             {: RESULT = new Literal_node("negfloat", val.toString()); :}
+
              | LIT_INT:val
              {: RESULT = new Literal_node("int", val.toString()); :}
 

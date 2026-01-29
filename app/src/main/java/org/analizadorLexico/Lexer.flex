@@ -30,7 +30,9 @@ Letter = [a-zA-Z]
 Digit = [0-9]
 Identifier = ({Letter}|_)({Letter}|{Digit}|_)*
 Integer = {Digit}+
+NegInteger = "-" {Digit}+
 Float = {Digit}+\.{Digit}+
+NEGFloat = "-" {Digit}+\.{Digit}+
 WhiteSpace = [ \t\r\n]+
 CommentSingle = "|" [^\r\n]*
 CommentMulti = "є" [^э]* "э"
@@ -105,7 +107,9 @@ CommentMulti = "є" [^э]* "э"
 
   // Literales
   {Integer}     { return symbol(sym.LIT_INT, Integer.parseInt(yytext())); }
+  {NegInteger}  { return symbol(sym.LIT_NEG, Integer.parseInt(yytext())); }
   {Float}       { return symbol(sym.LIT_FLOAT, Double.valueOf(yytext())); }
+  {NEGFloat}    { return symbol(sym.LIT_NEGFLOAT, Double.valueOf(yytext())); }
   {Identifier}  { return symbol(sym.IDENTIFIER, yytext()); }
   \"[^\"]*\"    { return symbol(sym.LIT_STRING, yytext()); }
   \'[^\']\'     { return symbol(sym.LIT_CHAR, yytext()); }
