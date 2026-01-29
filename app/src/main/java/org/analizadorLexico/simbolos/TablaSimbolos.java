@@ -13,7 +13,6 @@ public class TablaSimbolos {
         this.scopes = new Stack<>();
         this.otros = new Stack<>();
         this.currentLevel = 0;
-        openScope();
     }
 
     public void openScope() {
@@ -23,15 +22,11 @@ public class TablaSimbolos {
     }
 
     public void closeScope() {
-        if (scopes.size() > 1) {
-            final Map<String, String> scope = scopes.pop();
-            otros.push(scope);
-            currentLevel--;
+        final Map<String, String> scope = scopes.pop();
+        otros.push(scope);
+        currentLevel--;
 
-            System.out.println("Cerrando scope");
-        } else {
-            System.err.println("Advertencia: No se puede cerrar el scope global");
-        }
+        System.out.println("Cerrando scope");
     }
 
     public void agregar(final String nombre, final String tipo) {

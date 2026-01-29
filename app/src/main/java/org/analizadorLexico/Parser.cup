@@ -99,7 +99,7 @@ precedence left PAREN_OPEN, PAREN_CLOSE;
 
 start with program;
 
-program ::= declaration_list:lista{: RESULT = new Program(lista); :};
+program ::= {: parser.tablaSimbolos.openScope(); :} declaration_list:lista{: parser.tablaSimbolos.closeScope(); RESULT = new Program(lista); :};
 
 declaration_list ::= declaration_list:lista declaration:decl {: lista.agregarHijo(decl); RESULT = lista; :}
                    | declaration:decl {: Declaration_list_node nuevaLista = new Declaration_list_node(); nuevaLista.agregarHijo(decl); RESULT = nuevaLista; :};
