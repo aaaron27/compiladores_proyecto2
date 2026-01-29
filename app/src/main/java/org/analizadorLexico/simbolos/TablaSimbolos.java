@@ -19,7 +19,7 @@ public class TablaSimbolos {
         return tabla.containsKey(nombre);
     }
     public void imprimirTabla() {
-        System.out.println("\n=== CONTENIDO DE LA TABLA DE SÍMBOLOS ===");
+        System.out.println("\n=== CONTENIDO DE LA TABLA DE SIMBOLOS ===");
         if (tabla.isEmpty()) {
             System.out.println("La tabla está vacía.");
         } else {
