@@ -14,7 +14,6 @@ public class TypeNode extends NodoAST {
 
     @Override
     public String toString() {
-        // Esto permite que en el árbol veas "Tipo: int"
-        return "Tipo: " + nombreTipo;
+        return nombreTipo;
     }
 }

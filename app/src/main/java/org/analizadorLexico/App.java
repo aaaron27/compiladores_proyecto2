@@ -2,11 +2,14 @@ package org.analizadorLexico;
 
 import org.analizadorLexico.analyzer.LexicalAnalyzer;
 import org.analizadorLexico.ast.NodoAST;
+import org.analizadorLexico.codigo.GeneradorIntermedio;
+import org.analizadorLexico.simbolos.TablaSimbolos;
+
 import java.io.Reader;
 import java.io.FileReader;
 
 public final class App {
-    private static final String TEST_FILE_PATH = "/home/aaaron27/compiladores/proyecto2/prueba.txt";
+    private static final String TEST_FILE_PATH = "C:/Users/faken/Desktop/code/proyectos/compi/2/compiladores_proyecto2/pruebaprofe.c";
 
     public static void main(String[] args) {
         try {
@@ -25,6 +28,10 @@ public final class App {
                 raiz.print("", true);
                 parser.getTablaSimbolos().imprimirTabla();
                 System.out.println("\nAnalisis finalizado con exito!");
+                TablaSimbolos ts = new TablaSimbolos();
+                raiz.checkSemantics(ts);
+                GeneradorIntermedio gi = new GeneradorIntermedio();
+                raiz.generateCode(gi);
             } else {
                 System.out.println("El analisis termino pero no se genero un arbol valido.");
             }

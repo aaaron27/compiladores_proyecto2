@@ -1,5 +1,8 @@
 package org.analizadorLexico.ast;
 
+import org.analizadorLexico.codigo.GeneradorIntermedio;
+import org.analizadorLexico.simbolos.TablaSimbolos;
+
 public class Var_decl_node extends NodoAST {
     private String id;
 
@@ -22,6 +25,18 @@ public class Var_decl_node extends NodoAST {
         if (tipo != null) this.agregarHijo(tipo);
         if (dimensiones != null) this.agregarHijo(dimensiones);
         if (arrayInit != null) this.agregarHijo(arrayInit);
+    }
+    @Override
+    public void checkSemantics(TablaSimbolos ts) {
+        String tipo = this.hijos.get(0).toString();
+        String id = this.id;
+
+        ts.agregar(id, tipo);
+    }
+
+    @Override
+    public String generateCode(GeneradorIntermedio gi) {
+        return null;
     }
 
     @Override

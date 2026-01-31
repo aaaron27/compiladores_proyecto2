@@ -21,7 +21,7 @@ gift float _mi_  ¿ int _dif_, char _otra_ ? ¡  |sintactico  ?
 	for ¿ int _i_=20  endl  i>=10  endl  --i ?  | puede dar sintactico
 	 ¡ 
 		loop
-		  	_var_2 = _var_2 // 1 endl  
+		  	_var_2 = _var_2 endl
 			_var_ = _var_ - 1 endl  
 		exit when ¿ _var2_!=12.2 @ Σ ¿12 == ¿ 34*35 ??  ?  endl  
 		end loop endl

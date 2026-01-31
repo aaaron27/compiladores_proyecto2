@@ -5,9 +5,11 @@ import java.util.Map;
 import java.util.Stack;
 
 public class TablaSimbolos {
-    private final Stack<Map<String, String>> scopes;
-    private final Stack<Map<String, String>> otros;
+    private final Stack<Map<String, InfoSimbolo>> scopes;
+    private final Stack<Map<String, InfoSimbolo>> otros;
     private int currentLevel;
+
+    private int offsetActual = 0;
 
     public TablaSimbolos() {
         this.scopes = new Stack<>();
@@ -16,65 +18,81 @@ public class TablaSimbolos {
     }
 
     public void openScope() {
-        System.out.println("Abriendo scope");
         scopes.push(new HashMap<>());
         currentLevel++;
     }
 
     public void closeScope() {
-        final Map<String, String> scope = scopes.pop();
+        if (scopes.isEmpty()) return;
+
+        final Map<String, InfoSimbolo> scope = scopes.pop();
         otros.push(scope);
         currentLevel--;
 
-        System.out.println("Cerrando scope");
     }
 
     public void agregar(final String nombre, final String tipo) {
-        final Map<String, String> scope = scopes.peek();
+        if (scopes.isEmpty()) {
+            System.err.println("Error Crítico: Intentando agregar variable '" + nombre + "' sin un scope abierto.");
+            return;
+        }
+
+        final Map<String, InfoSimbolo> scope = scopes.peek();
 
         if (scope.containsKey(nombre)) {
-            System.err.println("Error Semantico: La variable '" + nombre + "' ya existe.");
+            System.err.println("Error Semántico: La variable '" + nombre + "' ya existe en este ámbito.");
         } else {
-            scope.put(nombre, tipo);
-            System.out.println("Simbolo agregado: " + nombre + " (" + tipo + ")");
+            offsetActual -= 4;
+            scope.put(nombre, new InfoSimbolo(tipo, offsetActual));
+
         }
     }
 
     public boolean existe(final String nombre) {
+        return obtenerInfo(nombre) != null;
+    }
+
+    public InfoSimbolo obtenerInfo(final String nombre) {
         for (int i = scopes.size() - 1; i >= 0; i--) {
             if (scopes.get(i).containsKey(nombre)) {
-                return true;
+                return scopes.get(i).get(nombre);
             }
         }
-        return false;
+        return null;
+    }
+
+    public String obtenerTipo(final String nombre) {
+        InfoSimbolo info = obtenerInfo(nombre);
+        return (info != null) ? info.tipo : null;
+    }
+
+    public int obtenerOffset(final String nombre) {
+        InfoSimbolo info = obtenerInfo(nombre);
+        return (info != null) ? info.offset : 0;
+    }
+
+    public void resetOffset() {
+        this.offsetActual = 0;
     }
 
     public void imprimirTabla() {
-        System.out.println("\n=== CONTENIDO DE LA TABLA DE SÍMBOLOS ===");
-        System.out.println("Niveles de scope: " + otros.size());
+        System.out.println("\n=== HISTORIAL DE TABLA DE SÍMBOLOS (Scopes Cerrados) ===");
+        System.out.println("Cantidad de scopes registrados: " + otros.size());
 
-        for (int i = otros.size() - 1; i >= 0; i--) {
-            final Map<String, String> scope = otros.get(i);
-            System.out.println("\n--- Scope nivel " + (i + 1) + " ---");
+        for (int i = 0; i < otros.size(); i++) {
+            final Map<String, InfoSimbolo> scope = otros.get(i);
+            System.out.println("\n--- Scope #" + (i + 1) + " ---");
 
             if (scope.isEmpty()) {
                 System.out.println("  (vacío)");
             } else {
-                System.out.printf("  %-20s | %-15s | %-10s%n", "Nombre", "Tipo", "Nivel");
-                System.out.println("  " + "-".repeat(50));
-                scope.forEach((nombre, tipo) -> System.out.printf("%-20s | %-10s%n", nombre, tipo));
+                System.out.printf("  %-15s | %-15s | %-10s%n", "Nombre", "Tipo", "Offset");
+                System.out.println("  " + "-".repeat(46));
+                scope.forEach((nombre, info) ->
+                        System.out.printf("  %-15s | %-15s | %-10d%n", nombre, info.tipo, info.offset)
+                );
             }
         }
-        System.out.println("==========================================\n");
-    }
-
-    public String obtenerTipo(final String nombre) {
-        for (int i = scopes.size() - 1; i >= 0; i--) {
-            final String tipo = scopes.get(i).get(nombre);
-            if (tipo != null) {
-                return tipo;
-            }
-        }
-        return null;
+        System.out.println("========================================================\n");
     }
 }
