@@ -79,6 +79,7 @@ public class Var_decl_node extends NodoAST {
             }
         }
     }
+
     private void validarMatriz(NodoAST init, int maxRows, int maxCols) {
         if (init.hijos.isEmpty()) return;
 
@@ -100,6 +101,7 @@ public class Var_decl_node extends NodoAST {
             }
         }
     }
+
     private boolean sonTiposCompatibles(String declarado, String asignado) {
         if (declarado.equals(asignado)) return true;
         if (declarado.equals("float") && asignado.equals("int")) return true;
@@ -115,7 +117,6 @@ public class Var_decl_node extends NodoAST {
             case 2:
                 NodoAST expr = this.hijos.get(1);
                 String value = expr.generateCode(gi);
-
                 gi.agregarCuarteto("=", value, null, this.id);
                 break;
             case 3:
@@ -126,13 +127,23 @@ public class Var_decl_node extends NodoAST {
 
                 gi.agregarCuarteto("DECL_ARRAY", this.id, len, null);
 
-                if (arrayInit != null) {
-                    int i = 0;
-                    int j = 0;
+                if (arrayInit != null && !arrayInit.hijos.isEmpty()) {
+                    NodoAST rowList = arrayInit.hijos.getFirst();
 
-                    for (NodoAST hijo : arrayInit.hijos) {
-                        String value = hijo.generateCode(gi);
-                        gi.agregarCuarteto("[][]=", value, i + "," + j, this.id);
+                    int fila = 0;
+
+                    for (NodoAST row : rowList.hijos) {
+                        if (!row.hijos.isEmpty()) {
+                            NodoAST exprList = row.hijos.getFirst();
+
+                            int columna = 0;
+                            for (NodoAST expr2 : exprList.hijos) {
+                                String valueEl = expr2.generateCode(gi);
+                                gi.agregarCuarteto(String.format("[%d][%d]=", fila, columna), valueEl, null, this.id);
+                                columna++;
+                            }
+                        }
+                        fila++;
                     }
                 }
                 break;

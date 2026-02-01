@@ -1,7 +1,5 @@
 package org.analizadorLexico.ast;
 
-import org.analizadorLexico.codigo.GeneradorIntermedio;
-
 public class For_statement_node extends NodoAST {
 
     public For_statement_node(NodoAST init, NodoAST condicion, NodoAST paso, NodoAST bloque) {
