@@ -108,37 +108,47 @@ public class Var_decl_node extends NodoAST {
 
     @Override
     public String generateCode(GeneradorIntermedio gi) {
-        switch (this.hijos.size()) {
-            case 1:
-                gi.agregarCuarteto("DECL", this.id, null, null);
-                break;
-            case 2:
-                NodoAST expr = this.hijos.get(1);
-                String value = expr.generateCode(gi);
+        // Generar código para inicialización de Matriz
+        if (esArreglo && this.hijos.size() > 2) {
+            NodoAST dims = this.hijos.get(1);
+            NodoAST init = this.hijos.get(2);
 
-                gi.agregarCuarteto("=", value, null, this.id);
-                break;
-            case 3:
-                NodoAST dims = this.hijos.get(1);
-                NodoAST arrayInit = this.hijos.get(2);
+            if (dims instanceof Dims_decl_node) {
+                int maxCols = ((Dims_decl_node) dims).getColumnas();
 
-                String len = dims.generateCode(gi);
+                // Recorrer la matriz de inicialización
+                if (!init.hijos.isEmpty()) {
+                    NodoAST rowList = init.hijos.get(0);
 
-                gi.agregarCuarteto("DECL_ARRAY", this.id, len, null);
-
-                if (arrayInit != null) {
                     int i = 0;
-                    int j = 0;
+                    for (NodoAST row : rowList.hijos) {
+                        if (!row.hijos.isEmpty()) {
+                            NodoAST exprList = row.hijos.get(0);
 
-                    for (NodoAST hijo : arrayInit.hijos) {
-                        String value = hijo.generateCode(gi);
-                        gi.agregarCuarteto("[][]=", value, i + "," + j, this.id);
+                            int j = 0;
+                            for (NodoAST expr : exprList.hijos) {
+                                String val = expr.generateCode(gi);
+
+                                int offsetInt = (i * maxCols + j) * 4;
+
+                                // ARR_STORE id, offset, valor -> En MIPS: sw valor, offset(base_arr)
+                                gi.agregarCuarteto("ARR_STORE", this.id, String.valueOf(offsetInt), val);
+
+                                j++;
+                            }
+                        }
+                        i++;
                     }
                 }
-                break;
+            }
+        }
+        // Generar código para variable simple
+        else if (!esArreglo && this.hijos.size() > 1) {
+            String valor = this.hijos.get(1).generateCode(gi);
+            gi.agregarCuarteto("=", valor, null, this.id);
         }
 
-        return this.id;
+        return null;
     }
 
     @Override

@@ -42,6 +42,10 @@ public class Assignment_node extends NodoAST { // Corregido: 'Assigment' -> 'Ass
         this.hijos.getFirst().checkSemantics(ts);
     }
 
+    public String getId() {
+        return this.id;
+    }
+
     @Override
     public String generateCode(GeneradorIntermedio gi) {
         String id = this.id;

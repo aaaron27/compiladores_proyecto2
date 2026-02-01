@@ -15,20 +15,22 @@ public class Binary_op_node extends NodoAST {
 
     @Override
     public void checkSemantics(TablaSimbolos ts) {
+        // Validar hijos
         this.hijos.get(0).checkSemantics(ts);
         this.hijos.get(1).checkSemantics(ts);
 
         String tipoIzq = this.hijos.get(0).tipoDato;
         String tipoDer = this.hijos.get(1).tipoDato;
 
-        if (tipoIzq == null || tipoDer == null) {
+        // Protección contra errores en cascada
+        if (tipoIzq == null || tipoDer == null || tipoIzq.equals("error") || tipoDer.equals("error")) {
             this.tipoDato = "error";
             return;
         }
 
-        // Logica de tipos
         switch (operador) {
-            case "+": case "-": case "*": case "/": case "%":
+            // Aritmética
+            case "+": case "-": case "*": case "/": case "^":
                 if (tipoIzq.equals("int") && tipoDer.equals("int")) {
                     this.tipoDato = "int";
                 } else if (tipoIzq.equals("float") || tipoDer.equals("float")) {
@@ -39,33 +41,64 @@ public class Binary_op_node extends NodoAST {
                 }
                 break;
 
-            case ">": case "<": case ">=": case "<=": case "==": case "!=":
-                // Las comparaciones siempre devuelven boolean
-                this.tipoDato = "boolean";
+            case "%": // Módulo
+                if (tipoIzq.equals("int") && tipoDer.equals("int")) {
+                    this.tipoDato = "int";
+                } else {
+                    this.tipoDato = "error";
+                    System.err.println("Error Semántico: Módulo (%) requiere números, encontrado: " + tipoIzq + " % " + tipoDer);
+                }
                 break;
 
+            // Relacionales
+            case ">": case "<": case ">=": case "<=": case "==": case "!=":
+                if (sonCompatibles(tipoIzq, tipoDer)) {
+                    this.tipoDato = "boolean";
+                } else {
+                    this.tipoDato = "error";
+                    System.err.println("Error Semántico: Comparación incompatible entre " + tipoIzq + " y " + tipoDer);
+                }
+                break;
+
+            // Lógicos
+            case "@": case "AND":
+            case "~": case "OR":
             case "&&": case "||":
                 if (tipoIzq.equals("boolean") && tipoDer.equals("boolean")) {
                     this.tipoDato = "boolean";
                 } else {
                     this.tipoDato = "error";
-                    System.err.println("Error Semántico: Operación lógica requiere booleanos.");
+                    System.err.println("Error Semántico: La operación lógica '" + operador + "' requiere booleanos.");
                 }
                 break;
 
             default:
                 this.tipoDato = "unknown";
+                System.err.println("Error Semántico: Operador binario desconocido '" + operador + "'");
         }
+    }
+
+    private boolean sonCompatibles(String t1, String t2) {
+        if (t1.equals(t2)) return true;
+        if ((t1.equals("int") || t1.equals("float")) && (t2.equals("int") || t2.equals("float"))) return true;
+        return false;
     }
 
     @Override
     public String generateCode(GeneradorIntermedio gi) {
         String izq = this.hijos.get(0).generateCode(gi);
         String der = this.hijos.get(1).generateCode(gi);
+
         String temporal = gi.nuevaTemporal();
-        gi.agregarCuarteto(this.operador, izq, der, temporal);
+        String opCodigo = this.operador;
+        if (opCodigo.equals("@")) opCodigo = "AND";
+        if (opCodigo.equals("~")) opCodigo = "OR";
+
+        gi.agregarCuarteto(opCodigo, izq, der, temporal);
+
         return temporal;
     }
+
     @Override
     public String toString() {
         return "Operacion Binaria: " + operador;
