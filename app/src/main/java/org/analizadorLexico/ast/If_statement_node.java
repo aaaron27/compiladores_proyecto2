@@ -25,13 +25,12 @@ public class If_statement_node extends NodoAST {
     @Override
     public String generateCode(GeneradorIntermedio gi) {
         String labelSalida = gi.nuevaEtiqueta();
-
         NodoAST listaCasos = this.hijos.get(0);
 
         for (NodoAST caso : listaCasos.hijos) {
             String labelSiguienteCaso = gi.nuevaEtiqueta();
 
-            NodoAST condicion = caso.hijos.get(0);
+            NodoAST condicion = caso.hijos.getFirst();
             String temporalCond = condicion.generateCode(gi);
 
             gi.agregarCuarteto("IF_FALSE", temporalCond, null, labelSiguienteCaso);

@@ -46,8 +46,6 @@ terminal String LIT_CHAR;
 terminal Integer LIT_INT;
 terminal Double LIT_FLOAT;
 terminal Boolean LIT_BOOL;
-terminal Integer LIT_NEG;
-terminal Double LIT_NEGFLOAT;
 
 /* --- Seccion de No Terminales (Gramatica) --- */
 
@@ -285,12 +283,6 @@ expression ::=
              {: RESULT = new Id_access_node(id, dims); :}
 
              /* --- Literales --- */
-             | LIT_NEG:val
-             {: RESULT = new Literal_node("neg", val.toString()); :}
-
-             | LIT_NEGFLOAT:val
-             {: RESULT = new Literal_node("negfloat", val.toString()); :}
-
              | LIT_INT:val
              {: RESULT = new Literal_node("int", val.toString()); :}
 

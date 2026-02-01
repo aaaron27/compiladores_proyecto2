@@ -29,6 +29,7 @@ public class Assignment_node extends NodoAST { // Corregido: 'Assigment' -> 'Ass
             this.agregarHijo(arrayInit);
         }
     }
+
     @Override
     public void checkSemantics(TablaSimbolos ts) {
         String id = this.id; // Lado izquierdo (Variable)
@@ -38,16 +39,13 @@ public class Assignment_node extends NodoAST { // Corregido: 'Assigment' -> 'Ass
             return;
         }
 
-        this.hijos.get(0).checkSemantics(ts);
-
+        this.hijos.getFirst().checkSemantics(ts);
     }
 
     @Override
     public String generateCode(GeneradorIntermedio gi) {
         String id = this.id;
-
-        String valor = this.hijos.get(0).generateCode(gi);
-
+        String valor = this.hijos.getFirst().generateCode(gi);
         gi.agregarCuarteto("=", valor, null, id);
 
         return id;

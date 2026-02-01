@@ -1,5 +1,8 @@
 package org.analizadorLexico.ast;
 
+import org.analizadorLexico.codigo.GeneradorIntermedio;
+import org.analizadorLexico.simbolos.TablaSimbolos;
+
 public class Param_node extends NodoAST {
     public String id;
 
@@ -11,6 +14,19 @@ public class Param_node extends NodoAST {
         }
     }
 
+    @Override
+    public void checkSemantics(TablaSimbolos ts) {
+        String nombreTipo = "unknown";
+        if (!this.hijos.isEmpty()) {
+            nombreTipo = this.hijos.getFirst().toString();
+        }
+        ts.agregar(this.id, nombreTipo);
+    }
+
+    @Override
+    public String generateCode(GeneradorIntermedio gi) {
+        return null;
+    }
     @Override
     public String toString() {
         return "Parametro: " + id;

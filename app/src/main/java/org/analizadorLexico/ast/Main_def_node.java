@@ -10,6 +10,7 @@ public class Main_def_node extends NodoAST {
             this.agregarHijo(bloque);
         }
     }
+
     @Override
     public void checkSemantics(TablaSimbolos ts) {
         ts.openScope();

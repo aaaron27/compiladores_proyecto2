@@ -28,7 +28,6 @@ public class TablaSimbolos {
         final Map<String, InfoSimbolo> scope = scopes.pop();
         otros.push(scope);
         currentLevel--;
-
     }
 
     public void agregar(final String nombre, final String tipo) {

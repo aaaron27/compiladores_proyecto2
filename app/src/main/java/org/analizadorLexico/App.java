@@ -9,7 +9,7 @@ import java.io.Reader;
 import java.io.FileReader;
 
 public final class App {
-    private static final String TEST_FILE_PATH = "C:/Users/faken/Desktop/code/proyectos/compi/2/compiladores_proyecto2/pruebaprofe.c";
+    private static final String TEST_FILE_PATH = "/home/aaaron27/compiladores/proyecto2/pruebaprofe.c";
 
     public static void main(String[] args) {
         try {
@@ -26,12 +26,14 @@ public final class App {
                 NodoAST raiz = (NodoAST) result;
                 System.out.println("\n--- ARBOL DE SINTAXIS ABSTRACTA (AST) ---");
                 raiz.print("", true);
-                parser.getTablaSimbolos().imprimirTabla();
-                System.out.println("\nAnalisis finalizado con exito!");
                 TablaSimbolos ts = new TablaSimbolos();
                 raiz.checkSemantics(ts);
                 GeneradorIntermedio gi = new GeneradorIntermedio();
                 raiz.generateCode(gi);
+                ts.imprimirTabla();
+                gi.imprimirCodigo();
+
+                System.out.println("\nAnalisis finalizado con exito!");
             } else {
                 System.out.println("El analisis termino pero no se genero un arbol valido.");
             }

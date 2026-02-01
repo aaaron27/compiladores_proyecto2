@@ -15,6 +15,6 @@ public class Cuarteto {
 
     @Override
     public String toString() {
-        return String.format("%-10s %-10s %-10s %-10s", op, arg1, (arg2==null?"":arg2), res);
+        return String.format("%-10s %-10s %-10s %-10s", op, arg1, (arg2 == null ? "" : arg2), res);
     }
 }

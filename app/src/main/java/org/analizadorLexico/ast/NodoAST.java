@@ -29,6 +29,7 @@ public abstract class NodoAST {
             hijos.get(i).print(indent, i == hijos.size() - 1);
         }
     }
+
     public void checkSemantics(TablaSimbolos ts) {
         if (this.hijos != null) {
             for (NodoAST hijo : this.hijos) {
