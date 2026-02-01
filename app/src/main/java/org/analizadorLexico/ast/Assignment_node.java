@@ -39,7 +39,8 @@ public class Assignment_node extends NodoAST { // Corregido: 'Assigment' -> 'Ass
             return;
         }
 
-        this.hijos.getFirst().checkSemantics(ts);
+        this.hijos.get(0).checkSemantics(ts);
+
     }
 
     public String getId() {
@@ -49,12 +50,16 @@ public class Assignment_node extends NodoAST { // Corregido: 'Assigment' -> 'Ass
     @Override
     public String generateCode(GeneradorIntermedio gi) {
         String id = this.id;
-        String valor = this.hijos.getFirst().generateCode(gi);
+
+        String valor = this.hijos.get(0).generateCode(gi);
+
         gi.agregarCuarteto("=", valor, null, id);
 
         return id;
     }
-
+    public String getId() {
+        return this.id;
+    }
     @Override
     public String toString() {
         return "Asignacion: " + id;
