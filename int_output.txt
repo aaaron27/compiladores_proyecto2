@@ -17,14 +17,17 @@ GOTO       null                  L3
 LABEL      null                  L3        
 <=         var        5.6        $t7       
 IF_FALSE   $t7                   L5        
+PRINT      "entra al if"            null      
 GOTO       null                  L4        
 LABEL      null                  L5        
 LABEL      null                  L4        
 IF_FALSE   true                  L7        
+PRINT      var                   null      
 GOTO       null                  L6        
 LABEL      null                  L7        
 ==         _otra_     'a'        $t8       
 IF_FALSE   $t8                   L9        
+PRINT      "!|"                  null      
 GOTO       null                  L8        
 LABEL      null                  L9        
 ==         _otra_     'b'        $t9       
@@ -51,6 +54,10 @@ ARR_STORE  _arr_      20         5
 ARR_STORE  _arr_      24         20        
 ARR_STORE  _arr_      28         40        
 ARR_STORE  _arr_      32         50        
+READ_INT   null                  _s1_      
+PRINT      _b1_                  null      
+PRINT      true                  null      
+PRINT      -6.7                  null      
 =          56.6                  fl1       
 %          45         76         $t11      
 +          1          $t11       $t12      

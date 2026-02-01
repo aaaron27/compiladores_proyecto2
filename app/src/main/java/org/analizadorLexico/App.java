@@ -3,6 +3,7 @@ package org.analizadorLexico;
 import org.analizadorLexico.analyzer.LexicalAnalyzer;
 import org.analizadorLexico.ast.NodoAST;
 import org.analizadorLexico.codigo.GeneradorIntermedio;
+import org.analizadorLexico.codigo.GeneradorMips;
 import org.analizadorLexico.simbolos.TablaSimbolos;
 
 import java.io.Reader;
@@ -26,14 +27,15 @@ public final class App {
                 NodoAST raiz = (NodoAST) result;
                 System.out.println("\n--- ARBOL DE SINTAXIS ABSTRACTA (AST) ---");
                 raiz.print("", true);
-                parser.getTablaSimbolos().imprimirTabla();
-                System.out.println("\nAnalisis finalizado con exito!");
                 TablaSimbolos ts = new TablaSimbolos();
                 raiz.checkSemantics(ts);
                 GeneradorIntermedio gi = new GeneradorIntermedio();
                 raiz.generateCode(gi);
                 ts.imprimirTabla();
                 gi.imprimirCodigo();
+                System.out.println("\nAnalisis finalizado con exito!");
+                GeneradorMips mipsGen = new GeneradorMips(gi.codigo);
+                mipsGen.generarArchivo("salida.asm");
             } else {
                 System.out.println("El analisis termino pero no se genero un arbol valido.");
             }

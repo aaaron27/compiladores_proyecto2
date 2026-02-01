@@ -1,17 +1,15 @@
 package org.analizadorLexico.ast;
 
-import org.w3c.dom.Node;
-
 public class Dims_access_node extends NodoAST {
-    private NodoAST indexI;
-    private NodoAST indexJ;
 
     public Dims_access_node(NodoAST indexI, NodoAST indexJ) {
-        this.indexI = indexI;
-        this.indexJ = indexJ;
+        super();
+        if (indexI != null) this.agregarHijo(indexI); // Hijo 0
+        if (indexJ != null) this.agregarHijo(indexJ); // Hijo 1
     }
+
     @Override
     public String toString() {
-        return "Dims_access[" + indexI.toString() + "][" + indexJ.toString() + "]";
+        return "Indices Array [][]";
     }
 }

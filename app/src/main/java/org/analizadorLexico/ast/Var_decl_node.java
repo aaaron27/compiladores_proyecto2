@@ -131,7 +131,7 @@ public class Var_decl_node extends NodoAST {
 
                                 int offsetInt = (i * maxCols + j) * 4;
 
-                                // ARR_STORE id, offset, valor -> En MIPS: sw valor, offset(base_arr)
+                                // ARR_STORE id, offset, valor
                                 gi.agregarCuarteto("ARR_STORE", this.id, String.valueOf(offsetInt), val);
 
                                 j++;

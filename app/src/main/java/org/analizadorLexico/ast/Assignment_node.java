@@ -57,9 +57,6 @@ public class Assignment_node extends NodoAST { // Corregido: 'Assigment' -> 'Ass
 
         return id;
     }
-    public String getId() {
-        return this.id;
-    }
     @Override
     public String toString() {
         return "Asignacion: " + id;
