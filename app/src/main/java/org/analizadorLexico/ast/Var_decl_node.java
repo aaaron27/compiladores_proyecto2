@@ -139,7 +139,7 @@ public class Var_decl_node extends NodoAST {
                             int columna = 0;
                             for (NodoAST expr2 : exprList.hijos) {
                                 String valueEl = expr2.generateCode(gi);
-                                gi.agregarCuarteto(String.format("[%d][%d]=", fila, columna), valueEl, null, this.id);
+                                gi.agregarCuarteto("=", valueEl, String.format("[%d][%d]", fila, columna), this.id);
                                 columna++;
                             }
                         }
