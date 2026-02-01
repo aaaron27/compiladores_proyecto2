@@ -79,7 +79,6 @@ public class Var_decl_node extends NodoAST {
             }
         }
     }
-
     private void validarMatriz(NodoAST init, int maxRows, int maxCols) {
         if (init.hijos.isEmpty()) return;
 
@@ -101,7 +100,6 @@ public class Var_decl_node extends NodoAST {
             }
         }
     }
-
     private boolean sonTiposCompatibles(String declarado, String asignado) {
         if (declarado.equals(asignado)) return true;
         if (declarado.equals("float") && asignado.equals("int")) return true;
@@ -110,46 +108,47 @@ public class Var_decl_node extends NodoAST {
 
     @Override
     public String generateCode(GeneradorIntermedio gi) {
-        switch (this.hijos.size()) {
-            case 1:
-                gi.agregarCuarteto("DECL", this.id, null, null);
-                break;
-            case 2:
-                NodoAST expr = this.hijos.get(1);
-                String value = expr.generateCode(gi);
-                gi.agregarCuarteto("=", value, null, this.id);
-                break;
-            case 3:
-                NodoAST dims = this.hijos.get(1);
-                NodoAST arrayInit = this.hijos.get(2);
+        // Generar código para inicialización de Matriz
+        if (esArreglo && this.hijos.size() > 2) {
+            NodoAST dims = this.hijos.get(1);
+            NodoAST init = this.hijos.get(2);
 
-                String len = dims.generateCode(gi);
+            if (dims instanceof Dims_decl_node) {
+                int maxCols = ((Dims_decl_node) dims).getColumnas();
 
-                gi.agregarCuarteto("DECL_ARRAY", this.id, len, null);
+                // Recorrer la matriz de inicialización
+                if (!init.hijos.isEmpty()) {
+                    NodoAST rowList = init.hijos.get(0);
 
-                if (arrayInit != null && !arrayInit.hijos.isEmpty()) {
-                    NodoAST rowList = arrayInit.hijos.getFirst();
-
-                    int fila = 0;
-
+                    int i = 0;
                     for (NodoAST row : rowList.hijos) {
                         if (!row.hijos.isEmpty()) {
-                            NodoAST exprList = row.hijos.getFirst();
+                            NodoAST exprList = row.hijos.get(0);
 
-                            int columna = 0;
-                            for (NodoAST expr2 : exprList.hijos) {
-                                String valueEl = expr2.generateCode(gi);
-                                gi.agregarCuarteto("=", valueEl, String.format("[%d][%d]", fila, columna), this.id);
-                                columna++;
+                            int j = 0;
+                            for (NodoAST expr : exprList.hijos) {
+                                String val = expr.generateCode(gi);
+
+                                int offsetInt = (i * maxCols + j) * 4;
+
+                                // ARR_STORE id, offset, valor -> En MIPS: sw valor, offset(base_arr)
+                                gi.agregarCuarteto("ARR_STORE", this.id, String.valueOf(offsetInt), val);
+
+                                j++;
                             }
                         }
-                        fila++;
+                        i++;
                     }
                 }
-                break;
+            }
+        }
+        // Generar código para variable simple
+        else if (!esArreglo && this.hijos.size() > 1) {
+            String valor = this.hijos.get(1).generateCode(gi);
+            gi.agregarCuarteto("=", valor, null, this.id);
         }
 
-        return this.id;
+        return null;
     }
 
     @Override

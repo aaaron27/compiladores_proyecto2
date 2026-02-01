@@ -5,72 +5,84 @@ import org.analizadorLexico.simbolos.TablaSimbolos;
 
 public class For_statement_node extends NodoAST {
 
-    public For_statement_node(NodoAST init, NodoAST condicion, NodoAST paso, NodoAST bloque) {
+    private String tipoVar;
+
+    public For_statement_node(NodoAST typeNode, NodoAST init, NodoAST condition, NodoAST step, NodoAST body) {
         super();
-        if (init != null) {
-            this.agregarHijo(init);
+
+        if (typeNode != null) {
+            this.tipoVar = typeNode.toString();
+        } else {
+            this.tipoVar = "int";
         }
-        if (condicion != null) {
-            this.agregarHijo(condicion);
-        }
-        if (paso != null) {
-            this.agregarHijo(paso);
-        }
-        if (bloque != null) {
-            this.agregarHijo(bloque);
-        }
+
+        // Hijos: 0=Init, 1=Cond, 2=Step, 3=Body
+        if (init != null) this.agregarHijo(init);
+        if (condition != null) this.agregarHijo(condition);
+        if (step != null) this.agregarHijo(step);
+        if (body != null) this.agregarHijo(body);
     }
 
     @Override
     public void checkSemantics(TablaSimbolos ts) {
+        ts.openScope();
 
+        NodoAST init = this.hijos.get(0);
+        if (init instanceof Assignment_node) {
+            String idVar = ((Assignment_node) init).getId();
+
+            ts.agregar(idVar, this.tipoVar);
+        }
+
+        init.checkSemantics(ts);
+
+        if (init.tipoDato != null && !sonTiposCompatibles(this.tipoVar, init.tipoDato)) {
+            System.err.println("Error Semántico: Tipo de inicialización en FOR incorrecto. Esperado: " + this.tipoVar + ", Encontrado: " + init.tipoDato);
+        }
+
+        NodoAST cond = this.hijos.get(1);
+        cond.checkSemantics(ts);
+
+        if (this.hijos.size() > 2) this.hijos.get(2).checkSemantics(ts);
+        if (this.hijos.size() > 3) this.hijos.get(3).checkSemantics(ts);
+
+        ts.closeScope();
+    }
+
+    private boolean sonTiposCompatibles(String declarado, String asignado) {
+        if (declarado.equals(asignado)) return true;
+        if (declarado.equals("float") && asignado.equals("int")) return true;
+        return false;
     }
 
     @Override
     public String generateCode(GeneradorIntermedio gi) {
-        final String for_label = gi.nuevaEtiqueta();
-        final String for_end_label = gi.nuevaEtiqueta();
-        final String for_condition_label = gi.nuevaEtiqueta();
-        final String for_condition_end_label = gi.nuevaEtiqueta();
-        final String for_body_label = gi.nuevaEtiqueta();
-        final String for_body_end_label = gi.nuevaEtiqueta();
-        final String for_update_label = gi.nuevaEtiqueta();
-        final String for_update_end_label = gi.nuevaEtiqueta();
+        String labelStart = gi.nuevaEtiqueta(); // Inicio del bucle
+        String labelEnd = gi.nuevaEtiqueta();   // Salida del bucle
 
-        gi.agregarCuarteto("LABEL", null, null, for_label);
 
-        gi.agregarCuarteto("LABEL", null, null, for_condition_label);
+        this.hijos.get(0).generateCode(gi);
 
-        NodoAST init = this.hijos.getFirst();
-        init.generateCode(gi);
+        gi.agregarCuarteto("LABEL", null, null, labelStart);
 
-        gi.agregarCuarteto("LABEL", null, null, for_condition_end_label);
-        NodoAST condicion = this.hijos.getFirst();
-        String temporalCond = condicion.generateCode(gi);
+        String condTemp = this.hijos.get(1).generateCode(gi);
 
-        gi.agregarCuarteto("IF", temporalCond, null, for_body_label);
-        gi.agregarCuarteto("GOTO", null, null, for_end_label);
+        gi.agregarCuarteto("IF_FALSE", condTemp, null, labelEnd);
 
-        gi.agregarCuarteto("LABEL", null, null, for_body_label);
+        if (this.hijos.size() > 3) {
+            this.hijos.get(3).generateCode(gi);
+        }
 
-        NodoAST bloque = this.hijos.get(3);
-        bloque.generateCode(gi);
+        if (this.hijos.size() > 2) {
+            this.hijos.get(2).generateCode(gi);
+        }
 
-        gi.agregarCuarteto("LABEL", null, null, for_body_end_label);
+        gi.agregarCuarteto("GOTO", null, null, labelStart);
 
-        gi.agregarCuarteto("LABEL", null, null, for_update_label);
-
-        NodoAST paso = this.hijos.get(2);
-        paso.generateCode(gi);
-
-        gi.agregarCuarteto("LABEL", null, null, for_update_end_label);
-
-        gi.agregarCuarteto("LABEL", null, null, for_end_label);
+        gi.agregarCuarteto("LABEL", null, null, labelEnd);
 
         return null;
     }
-
-    @Override
     public String toString() {
         return "Sentencia For";
     }

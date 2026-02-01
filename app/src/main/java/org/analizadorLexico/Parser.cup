@@ -186,11 +186,12 @@ else_part ::= ELSE ARROW block:b {: RESULT = new Else_part_node(b); :}
 
 loop_statement ::= LOOP statement_list:lista EXIT WHEN expression:expr ENDL END LOOP ENDL {: RESULT = new Loop_statement_node(lista, expr); :};
 
-for_statement ::= FOR PAREN_OPEN INT assignment:as ENDL expression:expr1 ENDL expression:expr2 PAREN_CLOSE block:b {: RESULT = new For_statement_node(as, expr1, expr2, b); :};
+for_statement ::= FOR PAREN_OPEN type:t assignment:as ENDL expression:expr1 ENDL expression:expr2 PAREN_CLOSE block:b
+                  {: RESULT = new For_statement_node(t, as, expr1, expr2, b); :};
 
 io_statement ::= SHOW PAREN_OPEN expression:expr PAREN_CLOSE ENDL {: RESULT = new Io_statement_node(expr); :}
-          | GET IDENTIFIER:id ENDL {: RESULT = new Io_statement_node (id); :}
-          | GET IDENTIFIER:id dims_decl:d ENDL {: RESULT = new Io_statement_node(id, d); :};
+          | GET PAREN_OPEN IDENTIFIER:id PAREN_CLOSE ENDL {: RESULT = new Io_statement_node (id); :}
+          | GET PAREN_OPEN IDENTIFIER:id dims_decl:d PAREN_CLOSE ENDL {: RESULT = new Io_statement_node(id, d); :};
 
 return_statement ::= RETURN expression:expr ENDL {: RESULT = new Return_statement_node(expr); :};
 

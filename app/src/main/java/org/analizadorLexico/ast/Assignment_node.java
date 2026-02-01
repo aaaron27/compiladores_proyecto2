@@ -43,6 +43,10 @@ public class Assignment_node extends NodoAST { // Corregido: 'Assigment' -> 'Ass
 
     }
 
+    public String getId() {
+        return this.id;
+    }
+
     @Override
     public String generateCode(GeneradorIntermedio gi) {
         String id = this.id;
