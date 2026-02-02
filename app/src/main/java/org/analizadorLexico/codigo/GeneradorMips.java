@@ -18,7 +18,7 @@ public class GeneradorMips {
     private Map<String, Integer> mapaMemoria;
     private Map<String, String> stringPool;
 
-    // NUEVO: Mapa para rastrear si una variable temporal es "int" o "float"
+    // Mapa para rastrear si una variable temporal es "int" o "float"
     private Map<String, String> tiposVariables;
 
     private int stackPointerOffset;
@@ -32,7 +32,7 @@ public class GeneradorMips {
         this.mipsCode = new StringBuilder();
         this.mapaMemoria = new HashMap<>();
         this.stringPool = new HashMap<>();
-        this.tiposVariables = new HashMap<>(); // Inicializamos el rastreador de tipos
+        this.tiposVariables = new HashMap<>();
         this.stackPointerOffset = -4;
     }
 
@@ -98,7 +98,7 @@ public class GeneradorMips {
                 mipsCode.append("    bnez $t0, ").append(c.res).append("\n");
                 break;
 
-            // --- ARITMÉTICA (Entera por defecto) ---
+            //ARITMÉTICA
             case "+": traducirAritmetica("add", c); break;
             case "-": traducirAritmetica("sub", c); break;
             case "*": traducirAritmetica("mul", c); break;
@@ -111,7 +111,7 @@ public class GeneradorMips {
                 guardarResultado(c.res, "$t0", "int");
                 break;
 
-            // --- RELACIONALES ---
+            // RELACIONALES
             case "<":  traducirAritmetica("slt", c); break;
             case ">":
                 cargarOperando(c.arg1, "$t0");
@@ -194,9 +194,6 @@ public class GeneradorMips {
                 paramCounter = 0;
                 mipsCode.append("    jal func_").append(c.arg1).append("\n");
 
-                // CORRECCIÓN PARA FLOTANTES:
-                // Verificamos si la función es float por su nombre (o heurística)
-                // Esto soluciona que imprima "4" en vez de "5.2"
                 boolean esFuncionFloat = c.arg1.contains("_miOtraFun_") || c.arg1.contains("Float");
 
                 if (esFuncionFloat) {
@@ -241,12 +238,10 @@ public class GeneradorMips {
         }
     }
 
-    // --- LÓGICA CENTRAL DE RETURN ---
     private void manejarReturn(Cuarteto c) {
         String valor = c.arg1;
         boolean esFloat = false;
 
-        // 1. CARGAR EL VALOR EN EL REGISTRO CORRECTO
         if (valor != null) {
             // Caso FLOAT Literal (ej: 5.2)
             if (valor.contains(".")) {
@@ -273,9 +268,8 @@ public class GeneradorMips {
             }
         }
 
-        // 2. DECISIÓN: MAIN vs FUNCIÓN
+        // MAIN
         if (contextoActualEsMain) {
-            // Imprimir el resultado antes de salir (para ver el 1+2=3 o el 5.2)
             if (valor != null) {
                 if (esFloat) {
                     mipsCode.append("    mov.s $f12, $f0\n"); // Mover a registro argumento float
@@ -299,7 +293,7 @@ public class GeneradorMips {
             mipsCode.append("    syscall\n");
 
         } else {
-            // Epílogo de función normal: Volver al llamador
+            // Volver al llamador
             mipsCode.append("    move $sp, $fp\n");
             mipsCode.append("    lw $fp, -4($sp)\n");
             mipsCode.append("    lw $ra, 0($sp)\n");
@@ -308,7 +302,6 @@ public class GeneradorMips {
     }
 
     private void manejarPrint(String arg) {
-        // 1. Strings
         if (arg.startsWith("\"")) {
             String etiqueta = obtenerEtiquetaString(arg);
             mipsCode.append("    li $v0, 4\n");
@@ -317,7 +310,6 @@ public class GeneradorMips {
             return;
         }
 
-        // 2. Variables (Revisamos el mapa de tipos para saber si es Float)
         String tipo = tiposVariables.getOrDefault(arg, "int");
 
         if (tipo.equals("float") || arg.contains(".")) {
@@ -330,7 +322,7 @@ public class GeneradorMips {
             mipsCode.append("    li $v0, 2\n"); // Syscall Print Float
             mipsCode.append("    syscall\n");
         }
-        // 3. Enteros / Booleanos
+        // Enteros / Booleanos
         else {
             if (arg.equals("true")) {
                 mipsCode.append("    li $v0, 4\n");
@@ -384,14 +376,12 @@ public class GeneradorMips {
         }
     }
 
-    // Sobrecarga: Guardar resultado registrando su tipo
     private void guardarResultado(String variable, String registroFuente, String tipo) {
         int offset = getOffsetMemoria(variable);
         mipsCode.append("    sw ").append(registroFuente).append(", ").append(offset).append("($fp)\n");
-        tiposVariables.put(variable, tipo); // <-- AQUÍ REGISTRAMOS SI ES INT O FLOAT
+        tiposVariables.put(variable, tipo);
     }
 
-    // Versión antigua para compatibilidad (asume int)
     private void guardarResultado(String variable, String registroFuente) {
         guardarResultado(variable, registroFuente, "int");
     }
