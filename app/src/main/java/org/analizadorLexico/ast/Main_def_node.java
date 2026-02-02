@@ -14,11 +14,13 @@ public class Main_def_node extends NodoAST {
 
     @Override
     public void checkSemantics(TablaSimbolos ts) {
+        ts.pushTipoRetorno("int");
         ts.openScope();
 
         super.checkSemantics(ts); // Revisar el bloque interno
 
         ts.closeScope();
+        ts.popTipoRetorno();
     }
 
     public String generateCode(GeneradorIntermedio gi) {

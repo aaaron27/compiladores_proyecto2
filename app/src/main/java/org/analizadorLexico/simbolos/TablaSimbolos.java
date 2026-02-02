@@ -7,6 +7,7 @@ import java.util.Stack;
 public class TablaSimbolos {
     private final Stack<Map<String, InfoSimbolo>> scopes;
     private final Stack<Map<String, InfoSimbolo>> otros;
+    private final Stack<String> stackTiposRetorno = new Stack<>();
     private int currentLevel;
 
     private int offsetActual = 0;
@@ -63,6 +64,22 @@ public class TablaSimbolos {
     public String obtenerTipo(final String nombre) {
         InfoSimbolo info = obtenerInfo(nombre);
         return (info != null) ? info.tipo : null;
+    }
+    public void pushTipoRetorno(String tipo) {
+        stackTiposRetorno.push(tipo);
+    }
+
+    public void popTipoRetorno() {
+        if (!stackTiposRetorno.isEmpty()) {
+            stackTiposRetorno.pop();
+        }
+    }
+
+    public String getTipoFuncionActual() {
+        if (stackTiposRetorno.isEmpty()) {
+            return "void"; // O lanzar un error: return fuera de función
+        }
+        return stackTiposRetorno.peek();
     }
 
     public int obtenerOffset(final String nombre) {

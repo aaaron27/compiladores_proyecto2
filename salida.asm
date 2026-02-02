@@ -6,6 +6,20 @@ false_msg: .asciiz "false"
 .text
 .globl main
 
+j main
+
+# LABEL      null                  func__miOtraFun_
+func__miOtraFun_:
+    sw $ra, 0($sp)
+    sw $fp, -4($sp)
+    move $fp, $sp
+    subu $sp, $sp, 100
+# RETURN     5.2                   null      
+    li.s $f0, 5.2
+    move $sp, $fp
+    lw $fp, -4($sp)
+    lw $ra, 0($sp)
+    jr $ra
 # LABEL      null                  main      
 main:
     move $fp, $sp
@@ -40,7 +54,7 @@ L0:
 # LABEL      null                  L1        
 L1:
 # DECLARE_ARRAY _arr_      36         null      
-    # Reservado espacio para array '_arr_': 36 bytes
+    # Array '_arr_' reservado
 # ARR_STORE  _arr_      0          1         
     li $t0, 0
     addiu $t1, $fp, -16
@@ -123,6 +137,22 @@ L1:
     li $v0, 4
     la $a0, newline
     syscall
+# IF_FALSE   true                  L3        
+    li $t0, 1
+    beqz $t0, L3
+# PRINT      25                    null      
+    li $a0, 25
+    li $v0, 1
+    syscall
+    li $v0, 4
+    la $a0, newline
+    syscall
+# GOTO       null                  L2        
+    j L2
+# LABEL      null                  L3        
+L3:
+# LABEL      null                  L2        
+L2:
 # *          2          3          $t5       
     li $t0, 2
     li $t1, 3
@@ -151,18 +181,32 @@ L1:
     li $v0, 4
     la $a0, newline
     syscall
-# PRINT      27                    null      
-    li $a0, 27
+# CALL       _miOtraFun_ 0          $t9       
+    jal func__miOtraFun_
+    swc1 $f0, -84($fp)
+# PRINT      $t9                   null      
+    lwc1 $f12, -84($fp)
+    li $v0, 2
+    syscall
+    li $v0, 4
+    la $a0, newline
+    syscall
+# +          1          2          $t10      
+    li $t0, 1
+    li $t1, 2
+    add $t2, $t0, $t1
+    sw $t2, -88($fp)
+# RETURN     $t10                  null      
+    lw $v0, -88($fp)
+    move $a0, $v0
     li $v0, 1
     syscall
     li $v0, 4
     la $a0, newline
     syscall
-# +          1          2          $t9       
-    li $t0, 1
-    li $t1, 2
-    add $t2, $t0, $t1
-    sw $t2, -84($fp)
+    li $v0, 10
+    syscall
 # EXIT       null                  null      
+finalizar_programa:
     li $v0, 10
     syscall

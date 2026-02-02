@@ -11,6 +11,7 @@ public class Unary_op_node extends NodoAST {
         super();
         this.operador = operador;
         this.tipo = tipo;
+        this.tipoDato = tipo;
         if (expresion != null) {
             this.agregarHijo(expresion);
         }

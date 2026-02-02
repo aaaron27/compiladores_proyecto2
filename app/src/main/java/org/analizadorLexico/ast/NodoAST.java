@@ -46,4 +46,7 @@ public abstract class NodoAST {
         }
         return null;
     }
+    public String getTipo() {
+        return tipoDato;
+    }
 }

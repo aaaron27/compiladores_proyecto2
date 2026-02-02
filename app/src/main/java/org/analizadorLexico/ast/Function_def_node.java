@@ -1,5 +1,6 @@
 package org.analizadorLexico.ast;
 
+import org.analizadorLexico.codigo.GeneradorIntermedio;
 import org.analizadorLexico.simbolos.TablaSimbolos;
 
 public final class Function_def_node extends NodoAST {
@@ -28,7 +29,7 @@ public final class Function_def_node extends NodoAST {
         String tipo = this.hijos.getFirst().toString();
 
         ts.agregar(id, tipo);
-
+        ts.pushTipoRetorno(tipo);
         // Abrir Scope para la función
         ts.openScope();
 
@@ -42,6 +43,22 @@ public final class Function_def_node extends NodoAST {
 
         // Cerrar Scope
         ts.closeScope();
+        ts.popTipoRetorno();
+    }
+    @Override
+    public String generateCode(GeneradorIntermedio gen) {
+        gen.agregarCuarteto("LABEL", null, null, "func_"+this.id);
+
+        // Generar el código para los parámetros
+        if (this.hijos.size() > 1 && this.hijos.get(1) != null) {
+            this.hijos.get(1).generateCode(gen);
+        }
+
+        // Generar el código del bloque de la función (cuerpo)
+        if (this.hijos.size() > 2 && this.hijos.get(2) != null) {
+            this.hijos.get(2).generateCode(gen);
+        }
+        return null;
     }
 
     @Override

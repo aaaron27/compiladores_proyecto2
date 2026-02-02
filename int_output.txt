@@ -1,3 +1,5 @@
+LABEL      null                  func__miOtraFun_
+RETURN     5.2                   null      
 LABEL      null                  main      
 =          0                     i         
 LABEL      null                  L0        
@@ -22,11 +24,18 @@ ARR_STORE  _arr_      32         50
 *          $t2        4          $t3       
 ARR_LOAD   _arr_      $t3        $t4       
 PRINT      $t4                   null      
+IF_FALSE   true                  L3        
+PRINT      25                    null      
+GOTO       null                  L2        
+LABEL      null                  L3        
+LABEL      null                  L2        
 *          2          3          $t5       
 +          $t5        1          $t6       
 *          $t6        4          $t7       
 ARR_LOAD   _arr_      $t7        $t8       
 PRINT      $t8                   null      
-PRINT      27                    null      
-+          1          2          $t9       
+CALL       _miOtraFun_ 0          $t9       
+PRINT      $t9                   null      
++          1          2          $t10      
+RETURN     $t10                  null      
 EXIT       null                  null      
