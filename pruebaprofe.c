@@ -64,7 +64,7 @@ gift float _mi_  ¿ int _dif_, char _otra_ ? ¡  |sintactico  ?
 	local char _arr_[3][3] = ¡¡1,5,10!,¡2,4,5!,¡20,40,50!! endl
 	local boolean _b1_ endl
 	local string _s1_ endl
-	get  ¿ _s1_ ?  endl
+	get  ¿ _wawa_ ?  endl
 	show ¿ _b1_ ?  endl
 	show ¿ true ?  endl
 	show ¿ -6.7 ?  endl

@@ -144,6 +144,17 @@ public class GeneradorMips {
                 cargarOperando(c.arg1, "$t0");
                 guardarResultado(c.res, "$t0");
                 break;
+            case "DECLARE_ARRAY":
+                String nombreArr = c.arg1;
+                int sizeBytes = Integer.parseInt(c.arg2);
+
+                int baseOffset = getOffsetMemoria(nombreArr);
+
+                stackPointerOffset -= (sizeBytes - 4);
+
+                mipsCode.append("    # Reservado espacio para array '").append(nombreArr)
+                        .append("': ").append(sizeBytes).append(" bytes\n");
+                break;
 
             case "ARR_STORE":
                 int offsetBase = getOffsetMemoria(c.arg1); // Offset base del array

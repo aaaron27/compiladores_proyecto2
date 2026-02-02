@@ -115,8 +115,12 @@ public class Var_decl_node extends NodoAST {
 
             if (dims instanceof Dims_decl_node) {
                 int maxCols = ((Dims_decl_node) dims).getColumnas();
+                int filas = ((Dims_decl_node) dims).getFilas();
+                int cols = ((Dims_decl_node) dims).getColumnas();
 
-                // Recorrer la matriz de inicialización
+                int sizeBytes = filas * cols * 4;
+
+                gi.agregarCuarteto("DECLARE_ARRAY", this.id, String.valueOf(sizeBytes), null);
                 if (!init.hijos.isEmpty()) {
                     NodoAST rowList = init.hijos.get(0);
 
@@ -130,6 +134,7 @@ public class Var_decl_node extends NodoAST {
                                 String val = expr.generateCode(gi);
 
                                 int offsetInt = (i * maxCols + j) * 4;
+
 
                                 // ARR_STORE id, offset, valor
                                 gi.agregarCuarteto("ARR_STORE", this.id, String.valueOf(offsetInt), val);

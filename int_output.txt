@@ -1,50 +1,13 @@
-=          "Hola  endl ~&|! endl & ?  mundo"            _str_     
-=          20                    i         
+LABEL      null                  main      
+=          0                     i         
 LABEL      null                  L0        
->=         i          10         $t0       
+<          i          5          $t0       
 IF_FALSE   $t0                   L1        
-LABEL      null                  L2        
-=          234                   _var_2    
--          _var_2     1          $t1       
-=          $t1                   var       
-!=         15         12.2       $t2       
-*          34         35         $t3       
-==         12         $t3        $t4       
-NOT        $t4                   $t5       
-AND        $t2        $t5        $t6       
-IF         $t6                   L2        
-GOTO       null                  L3        
-LABEL      null                  L3        
-<=         var        5.6        $t7       
-IF_FALSE   $t7                   L5        
-PRINT      "entra al if"            null      
-GOTO       null                  L4        
-LABEL      null                  L5        
-LABEL      null                  L4        
-IF_FALSE   true                  L7        
-PRINT      var                   null      
-GOTO       null                  L6        
-LABEL      null                  L7        
-==         _otra_     'a'        $t8       
-IF_FALSE   $t8                   L9        
-PRINT      "!|"                  null      
-GOTO       null                  L8        
-LABEL      null                  L9        
-==         _otra_     'b'        $t9       
-IF_FALSE   $t9                   L10       
-=          10                    _otra123133442_
-GOTO       null                  L8        
-LABEL      null                  L10       
-*          -10.5      -1.9       $t10      
-=          $t10                  _otra_    
-LABEL      null                  L8        
-LABEL      null                  L6        
--          i          1          i         
+PRINT      i                     null      
++          i          1          i         
 GOTO       null                  L0        
 LABEL      null                  L1        
-=          -0.01                 _wawa_    
-=          '!'                   _miChar_  
-=          '!'                   _miChar2_ 
+DECLARE_ARRAY _arr_      36         null      
 ARR_STORE  _arr_      0          1         
 ARR_STORE  _arr_      4          5         
 ARR_STORE  _arr_      8          10        
@@ -54,26 +17,16 @@ ARR_STORE  _arr_      20         5
 ARR_STORE  _arr_      24         20        
 ARR_STORE  _arr_      28         40        
 ARR_STORE  _arr_      32         50        
-READ_INT   null                  _s1_      
-PRINT      _b1_                  null      
-PRINT      true                  null      
-PRINT      -6.7                  null      
-=          56.6                  fl1       
-%          45         76         $t11      
-+          1          $t11       $t12      
-=          $t12                  fl2       
--          10         11         $t13      
-=          $t13                  arr       
-^          4.5        -0.005     $t14      
-=          $t14                  fl1       
-!=         6.7        8.9        $t15      
-=          $t15                  bl0       
-!=         true       false      $t16      
-=          $t16                  bl0       
->=         543.21     fl1        $t17      
->          20         56         $t18      
-NOT        $t18                  $t19      
-AND        false      $t19       $t20      
-OR         $t17       $t20       $t21      
-=          $t21                  bl1       
-+          1          2          $t22      
+*          0          3          $t1       
++          $t1        0          $t2       
+*          $t2        4          $t3       
+ARR_LOAD   _arr_      $t3        $t4       
+PRINT      $t4                   null      
+*          2          3          $t5       
++          $t5        1          $t6       
+*          $t6        4          $t7       
+ARR_LOAD   _arr_      $t7        $t8       
+PRINT      $t8                   null      
+PRINT      27                    null      
++          1          2          $t9       
+EXIT       null                  null      
